@@ -8,10 +8,14 @@ use Velo\Http\Request;
 use Velo\Logger\Logger;
 use Velo\Logger\NativeLogTextFormatter;
 use Velo\Router\Router\Router;
+use Velo\FileSystem\PathResolver\PathResolver;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $container = DefaultContainerFactory::create();
+
+$pathResolver = $container->get(PathResolver::class);
+$pathResolver->setDirPath(PathResolver::VIEWS_DIR_KEY, __DIR__ . '/../views/');
 
 // Set up Logger
 $logFilePath = __DIR__ . '/../logs/app.log';

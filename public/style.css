@@ -1,0 +1,61 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-color: #f9f6f0;
+    --text-color: #333333;
+    --text-light: #555555;
+    --primary-color: #e67e22;
+    --secondary-color: #2c3e50;
+    --white: #ffffff;
+    --footer-text: #d1d8e0;
+    --footer-text-muted: #a4b0be;
+}
+
+footer {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    padding: 30px 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.footer_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.footer_container p, 
+.footer_container a {
+    margin: 8px 0;
+    font-size: 15px;
+    color: var(--footer-text);
+}
+
+.footer_container a.email {
+    text-decoration: none;
+    display: block;
+}
+
+.footer_container a.email:hover {
+    color: var(--primary-color);
+}
+
+.copyright {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--footer-text-muted) !important;
+}
+nav{
+    background-color: var(--primary-color);
+}
+.register-icon{
+    width: 3vw;
+    height: 3vw;
+}
