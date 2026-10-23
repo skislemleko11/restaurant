@@ -17,6 +17,22 @@ $container = DefaultContainerFactory::create();
 $pathResolver = $container->get(PathResolver::class);
 $pathResolver->setDirPath(PathResolver::VIEWS_DIR_KEY, __DIR__ . '/../views/');
 
+if (!isset($_ENV['DB_HOST'])) {
+    $dotenv = Dotenv\Dotenv::createImmutable(realpath(__DIR__ . '/../'));
+    $dotenv->load();
+}
+
+$container->set(PDO::class, function () {
+    $dsn = "mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'] . ";port=" . $_ENV['DB_PORT'] . ";charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false
+    ];
+
+    return new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_USER_PASS'], $options);
+});
+
 // Set up Logger
 $logFilePath = __DIR__ . '/../logs/app.log';
 $logger = new Logger($container->get(NativeLogTextFormatter::class), $logFilePath);
