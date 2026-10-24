@@ -37,6 +37,19 @@ services:
     networks:
       - app-network
 
+  mailpit:
+    image: axllent/mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # Port SMTP do wysyłania maili przez aplikację
+      - "8025:8025" # Panel WWW do podglądu wiadomości
+    environment:
+      - MP_SMTP_AUTH=user:password
+      - MP_SMTP_AUTH_ALLOW_INSECURE=true
+#      - MP_UI_AUTH=admin:password
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge

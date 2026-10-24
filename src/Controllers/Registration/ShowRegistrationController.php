@@ -1,14 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controllers;
+namespace App\Controllers\Registration;
 
 use Velo\Http\Responses\Concrete\ViewResponse;
-use Velo\Http\Responses\Response;
 
-class RegistryController
+final class ShowRegistrationController
 {
-    public function showRegister(): Response
+    public function __invoke(): ViewResponse
     {
         return new ViewResponse('register.php');
     }

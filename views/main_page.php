@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smaki Miasta - Restauracja</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <meta name="description"
           content="Smaki Miasta to restauracja oferująca najlepsze dania ze świeżych składników. Sprawdź nasze menu i zarezerwuj stolik online.">
     <meta name="keywords"
           content="restauracja, jedzenie, obiad, kolacja, rezerwacja stolika, menu">
     <meta name="robots" content="all">
-    <link rel="icon" type="image/x-icon" href="/logo.ico">
+    <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
 </head>
 <body>
     <header>

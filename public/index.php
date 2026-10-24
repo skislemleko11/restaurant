@@ -54,4 +54,4 @@ $routesRegistryFile = __DIR__ . '/../bootstrap/routes_registry.php';
 $router->loadRoutesFromRegistryFile($routesRegistryFile);
 
 // Run the application
-new App($router, $container)->run(Request::fromGlobals());
+(new App($router, $container))->run(Request::fromGlobals());
