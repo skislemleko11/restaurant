@@ -41,7 +41,7 @@ final readonly class RegistrationService
                 'email' => $email,
                 'password_hash' => password_hash($password, PASSWORD_ARGON2ID),
                 'verification_token' => $token,
-                'expires_at' => $expiresAt,
+                'expires_at' => $expiresAt
             ]);
 
             $this->mailer->send($email, $token);

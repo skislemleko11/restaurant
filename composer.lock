@@ -334,12 +334,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/skislemleko11/velo.git",
-                "reference": "c1a1b3aa1d33ea42fb86b84e1685f6c80acf2bf1"
+                "reference": "e1efa99a05dde5760f193c5c576036d84f705a9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/skislemleko11/velo/zipball/c1a1b3aa1d33ea42fb86b84e1685f6c80acf2bf1",
-                "reference": "c1a1b3aa1d33ea42fb86b84e1685f6c80acf2bf1",
+                "url": "https://api.github.com/repos/skislemleko11/velo/zipball/e1efa99a05dde5760f193c5c576036d84f705a9f",
+                "reference": "e1efa99a05dde5760f193c5c576036d84f705a9f",
                 "shasum": ""
             },
             "require": {
@@ -378,7 +378,7 @@
                 "issues": "https://github.com/skislemleko11/velo/issues",
                 "source": "https://github.com/skislemleko11/velo/tree/main"
             },
-            "time": "2026-10-24T13:58:14+00:00"
+            "time": "2026-10-25T08:36:55+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

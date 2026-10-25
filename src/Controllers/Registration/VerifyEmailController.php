@@ -15,10 +15,8 @@ final readonly class VerifyEmailController
     {
     }
 
-    public function __invoke(Request $request): ViewResponse
+    public function __invoke(Request $request, string $token): ViewResponse
     {
-        $token = $request->urlParams['token'] ?? '';
-
         if ($token === '' || !$this->verificationService->verify($token)) {
             return new ViewResponse('email_verification.php', [
                 'success' => false,

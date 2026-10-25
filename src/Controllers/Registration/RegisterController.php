@@ -8,16 +8,22 @@ use App\Services\Registration\RegistrationService;
 use DateMalformedStringException;
 use Random\RandomException;
 use Velo\Http\Request;
+use Velo\Http\Responses\Concrete\RedirectResponse;
 use Velo\Http\Responses\Concrete\ViewResponse;
 use Velo\Http\Responses\Response;
+use Velo\Middlewares\AntiCsrf\AntiCsrfTokenManagerInterface;
 use Velo\Session\FlashMessages\FlashMessagesInterface;
+use Velo\Session\Session\SessionInterface;
 
 final readonly class RegisterController
 {
     public function __construct(
-        private RegistrationService $registrationService,
-        private FlashMessagesInterface $flashMessages
-    ) {
+        private RegistrationService           $registrationService,
+        private AntiCsrfTokenManagerInterface $tokenManager,
+        private SessionInterface              $session,
+        private FlashMessagesInterface        $flashMessages
+    )
+    {
     }
 
     /**
@@ -42,9 +48,13 @@ final readonly class RegisterController
             $this->flashMessages->error('Hasła muszą być identyczne.');
         }
 
+        $token = $this->tokenManager->getToken();
+        $this->session->setFlash('email', $email);
+
         if ($this->flashMessages->has(FlashMessagesInterface::ERROR)) {
             return new ViewResponse('register.php', [
                 'email' => $email,
+                'token' => $token
             ], 422);
         }
 
@@ -53,10 +63,12 @@ final readonly class RegisterController
         } catch (RegistrationException $exception) {
             $this->flashMessages->error($exception->getMessage());
             return new ViewResponse('register.php', [
-                'email' => $email,
-            ], 422);
+                'token' => $token
+            ], 409);
         }
 
-        return new ViewResponse('registration_success.php');
+        $this->session->setFlash('success', 'Na twój adres email został wysłany link weryfikacyjny.');
+
+        return new RedirectResponse('/register');
     }
 }

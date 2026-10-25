@@ -1,3 +1,15 @@
+<?php
+declare(strict_types=1);
+
+use Velo\Session\FlashMessages\FlashMessagesInterface;
+use Velo\Session\Session\SessionInterface;
+
+/**
+ * @var FlashMessagesInterface $flashMessages
+ * @var SessionInterface $session
+ * @var string $token
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,10 +20,7 @@
 <body>
 <h1>Rejestracja</h1>
 
-<?php use Velo\Session\FlashMessages\FlashMessagesInterface;
-
-/** @var FlashMessagesInterface $flashMessages */
-if (($flashMessages->has(FlashMessagesInterface::ERROR))): ?>
+<?php if (($flashMessages->has(FlashMessagesInterface::ERROR))): ?>
     <ul>
         <?php foreach ($flashMessages->get(FlashMessagesInterface::ERROR) as $error): ?>
             <li><?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></li>
@@ -19,12 +28,17 @@ if (($flashMessages->has(FlashMessagesInterface::ERROR))): ?>
     </ul>
 <?php endif; ?>
 
+<?php if (($success = $session->getFlash('success')) !== null): ?>
+    <p><?= $success ?></p>
+<?php endif; ?>
+
 <form method="post">
     <label>Email <input type="email" name="email"
-                        value="<?= htmlspecialchars($email ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
+                        value="<?= htmlspecialchars($session->getFlash('email', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
                         required></label>
     <label>Hasło <input type="password" name="password" minlength="8" required></label>
     <label>Potwierdź hasło <input type="password" name="password_confirmation" minlength="8" required></label>
+    <input type="hidden" value="<?= $token ?>" name="csrf_token">
     <input type="submit" value="Zarejestruj">
 </form>
 </body>
