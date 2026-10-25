@@ -15,31 +15,58 @@ use Velo\Session\Session\SessionInterface;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
     <title>Rejestracja</title>
 </head>
 <body>
-<h1>Rejestracja</h1>
+<header>
+        <nav>
+            <ul class="nav_links">
+                <li class="nav_item"><a href="/"><img class="logo" src="imgs/logo.png" alt="Logo restauracji Smaki Miasta"></a></li>
+                <div class="separator">
+                    <li><a href="/">Strona główna</a></li>
+                    <li><a href="/menu">Menu</a></li>
+                    <li><a href="/rezerwacja">Rezerwacja</a></li>
+                    <li><a href="/kontakt">Kontakt</a></li>
+                    <li><a href="/register"><img src="imgs/register.png" alt="Rejestracja" class="register-icon"></a></li>
+                </div>
+            </ul>
+        </nav>
+    </header>
+<main>
+    <div class="register_main">
+        <h1>Rejestracja</h1>
+        <?php if (($flashMessages->has(FlashMessagesInterface::ERROR))): ?>
+            <ul>
+                <?php foreach ($flashMessages->get(FlashMessagesInterface::ERROR) as $error): ?>
+                    <li><?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></li>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
 
-<?php if (($flashMessages->has(FlashMessagesInterface::ERROR))): ?>
-    <ul>
-        <?php foreach ($flashMessages->get(FlashMessagesInterface::ERROR) as $error): ?>
-            <li><?= htmlspecialchars($error, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></li>
-        <?php endforeach; ?>
-    </ul>
-<?php endif; ?>
+        <?php if (($success = $session->getFlash('success')) !== null): ?>
+            <p><?= $success ?></p>
+        <?php endif; ?>
 
-<?php if (($success = $session->getFlash('success')) !== null): ?>
-    <p><?= $success ?></p>
-<?php endif; ?>
-
-<form method="post">
-    <label>Email <input type="email" name="email"
-                        value="<?= htmlspecialchars($session->getFlash('email', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
-                        required></label>
-    <label>Hasło <input type="password" name="password" minlength="8" required></label>
-    <label>Potwierdź hasło <input type="password" name="password_confirmation" minlength="8" required></label>
-    <input type="hidden" value="<?= $token ?>" name="csrf_token">
-    <input type="submit" value="Zarejestruj">
-</form>
+        <form method="post">
+            <label>Email <input type="email" name="email"
+                                value="<?= htmlspecialchars($session->getFlash('email', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
+                                required></label>
+            <label>Hasło <input type="password" name="password" minlength="8" required></label>
+            <label>Potwierdź hasło <input type="password" name="password_confirmation" minlength="8" required></label>
+            <input type="hidden" value="<?= $token ?>" name="csrf_token">
+            <input type="submit" value="Zarejestruj">
+        </form>
+    </div>
+</main>
+<footer>
+        <div class="footer_container">
+            <p class="kontakt">Kontakt:</p>
+            <p class="telefon">tel: +48 123 456 789</p>
+            <p class="adres">Główna siedziba: ul. Przykładowa 10, Miasto</p>
+            <a class="email" href="mailto:kontakt@smakimiasta.pl">email: kontakt@smakimiasta.pl</a>              
+            <p class="copyright">Copyright © 2026 | Smaki Miasta</p>
+        </div>  
+    </footer>
 </body>
 </html>
