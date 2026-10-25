@@ -2,3 +2,4 @@ vendor/
 .idea/
 .vscode/
 logs/app.log
+.phpunit.cache/

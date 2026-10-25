@@ -38,6 +38,11 @@ final readonly class Mailer
         $this->mailer->$name = $value;
     }
 
+    public function __get(string $name): mixed
+    {
+        return $this->mailer->$name;
+    }
+
     public function __call(string $name, array $arguments): mixed
     {
         return $this->mailer->$name(...$arguments);
