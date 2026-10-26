@@ -33,7 +33,7 @@ final readonly class Mailer
         );
     }
 
-    public function __set(string $name, $value): void
+    public function __set(string $name, mixed $value): void
     {
         $this->mailer->$name = $value;
     }

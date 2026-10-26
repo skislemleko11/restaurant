@@ -13,28 +13,8 @@
     <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
 </head>
 <body>
-    <header>
-        <nav>
-            <ul class="nav_links">
-                <li class="nav_item"><a href="/"><img class="logo" src="imgs/logo.png" alt="Logo restauracji Smaki Miasta"></a></li>
-                <div class="separator">
-                    <li><a href="/">Strona główna</a></li>
-                    <li><a href="/menu">Menu</a></li>
-                    <li><a href="/rezerwacja">Rezerwacja</a></li>
-                    <li><a href="/kontakt">Kontakt</a></li>
-                    <li><a href="/register"><img src="imgs/register.png" alt="Rejestracja" class="register-icon"></a></li>
-                </div>
-            </ul>
-        </nav>
-    </header>
-    <footer>
-        <div class="footer_container">
-            <p class="kontakt">Kontakt:</p>
-            <p class="telefon">tel: +48 123 456 789</p>
-            <p class="adres">Główna siedziba: ul. Przykładowa 10, Miasto</p>
-            <a class="email" href="mailto:kontakt@smakimiasta.pl">email: kontakt@smakimiasta.pl</a>              
-            <p class="copyright">Copyright © 2026 | Smaki Miasta</p>
-        </div>  
-    </footer>
+    <?php require __DIR__ . '/templates/header.html'; ?>
+
+    <?php require __DIR__ . '/templates/footer.html'; ?>
 </body>
 </html>
