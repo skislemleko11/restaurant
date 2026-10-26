@@ -205,7 +205,11 @@ form input[type="submit"]:hover {
     max-width: 400px;
     margin: 0 0 20px 0;
 }
-
+.error404{
+    color: var(--primary-color); 
+    font-weight: bold;
+    text-decoration: none;
+}
 .register_main > ul li {
     margin-bottom: 5px;
 }
@@ -225,6 +229,23 @@ form input[type="submit"]:hover {
     margin: 0 0 20px 0;
     text-align: center;
     font-weight: 600;
+}
+.main_verification {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.main_verification p {
+    font-size: 18px;
+    color: var(--text-light);
+    max-width: 600px;
+    line-height: 1.5;
+    margin-top: 10px;
 }
 
 @media (max-width: 768px) {
