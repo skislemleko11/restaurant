@@ -26,7 +26,7 @@ final readonly class ReservationService
 
     public function getReservationDurationMinutes(): int
     {
-        return 120;
+        return 90;
     }
 
     /**
