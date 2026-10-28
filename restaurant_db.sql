@@ -47,7 +47,8 @@ ALTER TABLE `password_reset`
 ALTER TABLE `reservation`
   ADD PRIMARY KEY (`reservation_id`),
   ADD KEY `fk_user` (`account_id`),
-  ADD KEY `fk_table` (`table_id`);
+  ADD KEY `fk_table` (`table_id`),
+  ADD KEY `idx_reservation_table_date` (`table_id`, `date_of_reservation`);
 
 ALTER TABLE `tables_info`
   ADD PRIMARY KEY (`table_id`);

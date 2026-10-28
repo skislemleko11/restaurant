@@ -4,6 +4,7 @@ declare(strict_types=1);
 use Velo\Core\App;
 use Velo\Core\DefaultContainerFactory;
 use Velo\Core\ThrowableHandling\ThrowableHandler;
+use Velo\Database\PdoFactory;
 use Velo\Http\Request;
 use Velo\Logger\Logger;
 use Velo\Logger\NativeLogTextFormatter;
@@ -17,6 +18,7 @@ $container = DefaultContainerFactory::create();
 $pathResolver = $container->get(PathResolver::class);
 $pathResolver->setDirPath(PathResolver::VIEWS_DIR_KEY, __DIR__ . '/../views/');
 $pathResolver->setErrorFilePath(404, 'errors/error404.php');
+$pathResolver->setErrorFilePath(403, 'errors/error_general.php');
 $pathResolver->setErrorGeneralFilePath('errors/error_general.php');
 
 if (!isset($_ENV['DB_HOST'])) {
@@ -24,16 +26,14 @@ if (!isset($_ENV['DB_HOST'])) {
     $dotenv->load();
 }
 
-$container->set(PDO::class, function () {
-    $dsn = "mysql:host=" . $_ENV['DB_HOST'] . ";dbname=" . $_ENV['DB_NAME'] . ";port=" . $_ENV['DB_PORT'] . ";charset=utf8mb4";
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false
-    ];
-
-    return new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_USER_PASS'], $options);
-});
+$container->set(PDO::class, static fn(): PDO => PdoFactory::create(
+    host: $_ENV['DB_HOST'],
+    sql: 'mysql',
+    port: (int)$_ENV['DB_PORT'],
+    dbname: $_ENV['DB_NAME'],
+    username: $_ENV['DB_USER'],
+    password: $_ENV['DB_USER_PASS']
+));
 
 // Set up Logger
 $logFilePath = __DIR__ . '/../logs/app.log';
