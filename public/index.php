@@ -17,6 +17,7 @@ $container = DefaultContainerFactory::create();
 $pathResolver = $container->get(PathResolver::class);
 $pathResolver->setDirPath(PathResolver::VIEWS_DIR_KEY, __DIR__ . '/../views/');
 $pathResolver->setErrorFilePath(404, 'errors/error404.php');
+$pathResolver->setErrorFilePath(403, 'errors/error_general.php');
 $pathResolver->setErrorGeneralFilePath('errors/error_general.php');
 
 if (!isset($_ENV['DB_HOST'])) {
