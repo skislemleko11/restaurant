@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\Controllers\Auth\ActionAuthController;
+use App\Controllers\Auth\ShowAuthController;
 use App\Controllers\HomeController;
 use App\Controllers\ReservationController;
 use App\Controllers\Registration\RegisterController;
@@ -22,4 +24,7 @@ $router->get('/reservation', ReservationController::class);
 $router->get('/reservation/slots', ReservationController::class, 'slots');
 $router->get('/reservation/tables', ReservationController::class, 'tables');
 $router->post('/reservation', ReservationController::class, 'store')
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/login', ShowAuthController::class, 'login');
+$router->post('/login', ActionAuthController::class, 'login')
     ->addMiddleware(AntiCsrfMiddleware::class);

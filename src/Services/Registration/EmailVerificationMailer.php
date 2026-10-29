@@ -59,7 +59,7 @@ final readonly class EmailVerificationMailer
                                         <p style="margin: 0 0 30px 0; color: #555555; font-size: 16px; line-height: 1.5;">
                                             Aby w pełni korzystać z konta, prosimy o potwierdzenie Twojego adresu email. Wystarczy kliknąć poniższy przycisk.
                                         </p>
-                                        <a href='<?= $url ?>' style="background-color: #e67e22; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
+                                        <a href='$url' style="background-color: #e67e22; color: #ffffff; text-decoration: none; padding: 14px 25px; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
                                             Potwierdź adres email
                                         </a>
                                         

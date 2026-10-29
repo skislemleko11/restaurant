@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\Repositories\UserRepository;
+use App\Repositories\UserRepositoryInterface;
 use Velo\Core\App;
 use Velo\Core\DefaultContainerFactory;
 use Velo\Core\ThrowableHandling\ThrowableHandler;
@@ -35,6 +37,7 @@ $container->set(PDO::class, function () {
 
     return new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_USER_PASS'], $options);
 });
+$container->set(UserRepositoryInterface::class, UserRepository::class);
 
 // Set up Logger
 $logFilePath = __DIR__ . '/../logs/app.log';
