@@ -22,7 +22,7 @@ use Velo\Session\Session\SessionInterface;
 <?php require __DIR__ . '/templates/header.html'; ?>
 
 <main>
-    <div class="register_main">
+    <div class="login_main">
         <h1>Zaloguj się</h1>
         <?php if (($flashMessages->has(FlashMessagesInterface::ERROR))): ?>
             <ul>
@@ -41,7 +41,7 @@ use Velo\Session\Session\SessionInterface;
             <input type="submit" value="Zaloguj się">
         </form>
 
-        <p><a href="/register">Nie masz konta? Zarejestruj się</a></p>
+        <p><a href="/register" class="dont_have_account">Nie masz konta? Zarejestruj się</a></p>
     </div>
 </main>
 

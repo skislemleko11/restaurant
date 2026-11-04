@@ -45,6 +45,7 @@ use Velo\Session\Session\SessionInterface;
             <input type="hidden" value="<?= $token ?>" name="csrf_token">
             <input type="submit" value="Zarejestruj">
         </form>
+        <p class="normal"><a href="/login" class="already_have_account">Masz już konto? Zaloguj się</a></p>
     </div>
 </main>
 

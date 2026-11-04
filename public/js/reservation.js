@@ -151,5 +151,5 @@
         }
     });
 
-    loadSlots();
+    void loadSlots();
 })();
