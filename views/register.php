@@ -19,7 +19,7 @@ use Velo\Session\Session\SessionInterface;
     <title>Rejestracja</title>
 </head>
 <body>
-<?php require __DIR__ . '/templates/header.html'; ?>
+<?php require __DIR__ . '/templates/header.php'; ?>
 
 <main>
     <div class="register_main">

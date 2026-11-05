@@ -8,7 +8,7 @@
 </head>
 <body>
 <?php
-    require __DIR__ . "/templates/header.html";
+    require __DIR__ . "/templates/header.php";
 ?>
 <main>
     <div class="main_verification">

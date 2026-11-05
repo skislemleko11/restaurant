@@ -31,7 +31,8 @@ final class UserRepositoryTest extends TestCase
             ->with(self::stringContains('verfication_token_used_at IS NOT NULL'))
             ->willReturn($statement);
 
-        $user = new UserRepository($connection)->findVerifiedByEmail('user@example.test');
+        $repository = new UserRepository($connection);
+        $user = $repository->findVerifiedByEmail('user@example.test');
 
         self::assertNotNull($user);
         self::assertSame(7, $user->id());
@@ -47,8 +48,27 @@ final class UserRepositoryTest extends TestCase
         $connection = $this->createMock(PDO::class);
         $connection->method('prepare')->willReturn($statement);
 
-        self::assertNull(
-            new UserRepository($connection)->findVerifiedByEmail('missing@example.test')
-        );
+        $repository = new UserRepository($connection);
+
+        self::assertNull($repository->findVerifiedByEmail('missing@example.test'));
+    }
+
+    #[Test]
+    public function it_returns_verified_account_id_by_email(): void
+    {
+        $statement = $this->createMock(PDOStatement::class);
+        $statement->expects(self::once())
+            ->method('execute')
+            ->with(['email' => 'user@example.test']);
+        $statement->method('fetchColumn')->willReturn(7);
+
+        $connection = $this->createMock(PDO::class);
+        $connection->expects(self::once())
+            ->method('prepare')
+            ->willReturn($statement);
+
+        $repository = new UserRepository($connection);
+
+        self::assertSame(7, $repository->findVerifiedAccountIdByEmail('user@example.test'));
     }
 }

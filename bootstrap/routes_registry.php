@@ -28,3 +28,11 @@ $router->post('/reservation', ReservationController::class, 'store')
 $router->get('/login', ShowAuthController::class, 'login');
 $router->post('/login', ActionAuthController::class, 'login')
     ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/forgot-password', ShowAuthController::class, 'forgotPassword');
+$router->post('/forgot-password', ActionAuthController::class, 'requestPasswordReset')
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/reset-password/{token}', ShowAuthController::class, 'resetPassword');
+$router->post('/reset-password/{token}', ActionAuthController::class, 'resetPassword')
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->post('/logout', ActionAuthController::class, 'logout')
+    ->addMiddleware(AntiCsrfMiddleware::class);

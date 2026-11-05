@@ -89,6 +89,56 @@ nav li a:hover {
     height: 25px;
 }
 
+.account-menu {
+    position: relative;
+}
+
+.account-menu summary {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 5px;
+}
+
+.account-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.account-menu summary:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.account-menu form {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1;
+    width: auto;
+    min-width: 130px;
+    padding: 8px;
+    background-color: var(--white);
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.logout-button {
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.logout-button:hover {
+    background-color: #d67118;
+}
+
 footer {
     background-color: var(--secondary-color);
     color: var(--white);
