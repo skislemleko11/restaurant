@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 use App\Repositories\UserRepository;
 use App\Repositories\UserRepositoryInterface;
+use App\Repositories\PasswordResetRepository;
+use App\Repositories\PasswordResetRepositoryInterface;
+use App\Repositories\ReservationRepository;
+use App\Repositories\ReservationRepositoryInterface;
+use App\Services\Auth\PasswordResetMailer;
+use App\Services\Auth\PasswordResetMailerInterface;
 use Velo\Core\App;
 use Velo\Core\DefaultContainerFactory;
 use Velo\Core\ThrowableHandling\ThrowableHandler;
@@ -38,6 +44,9 @@ $container->set(PDO::class, function () {
     return new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_USER_PASS'], $options);
 });
 $container->set(UserRepositoryInterface::class, UserRepository::class);
+$container->set(ReservationRepositoryInterface::class, ReservationRepository::class);
+$container->set(PasswordResetRepositoryInterface::class, PasswordResetRepository::class);
+$container->set(PasswordResetMailerInterface::class, PasswordResetMailer::class);
 
 // Set up Logger
 $logFilePath = __DIR__ . '/../logs/app.log';
@@ -60,4 +69,5 @@ $routesRegistryFile = __DIR__ . '/../bootstrap/routes_registry.php';
 $router->loadRoutesFromRegistryFile($routesRegistryFile);
 
 // Run the application
-new App($router, $container)->run(Request::fromGlobals());
+$app = new App($router, $container);
+$app->run(Request::fromGlobals());

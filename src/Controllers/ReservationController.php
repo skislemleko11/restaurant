@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\ReservationService;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
+use Throwable;
 use Velo\Http\Request;
 use Velo\Http\Responses\Concrete\JsonResponse;
 use Velo\Http\Responses\Concrete\RedirectResponse;
@@ -19,13 +21,17 @@ use Velo\Session\Session\SessionInterface;
 final readonly class ReservationController
 {
     public function __construct(
-        private ReservationService $reservationService,
+        private ReservationService            $reservationService,
         private AntiCsrfTokenManagerInterface $tokenManager,
-        private FlashMessagesInterface $flashMessages,
-        private SessionInterface $session
-    ) {
+        private FlashMessagesInterface        $flashMessages,
+        private SessionInterface              $session
+    )
+    {
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     public function __invoke(): ViewResponse
     {
         $today = new DateTimeImmutable('today', new DateTimeZone(ReservationService::TIMEZONE));
@@ -70,6 +76,9 @@ final readonly class ReservationController
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function store(Request $request): Response
     {
         try {

@@ -22,10 +22,9 @@ final class AuthServiceTest extends TestCase
             ->with('user@example.test')
             ->willReturn(new User(7, password_hash('correct-password', PASSWORD_ARGON2ID)));
 
-        self::assertSame(
-            7,
-            new AuthService($repository)->authenticate('user@example.test', 'correct-password')
-        );
+        $service = new AuthService($repository);
+
+        self::assertSame(7, $service->authenticate('user@example.test', 'correct-password'));
     }
 
     #[Test]
@@ -35,8 +34,8 @@ final class AuthServiceTest extends TestCase
         $repository->method('findVerifiedByEmail')
             ->willReturn(new User(7, password_hash('correct-password', PASSWORD_ARGON2ID)));
 
-        self::assertNull(
-            new AuthService($repository)->authenticate('user@example.test', 'wrong-password')
-        );
+        $service = new AuthService($repository);
+
+        self::assertNull($service->authenticate('user@example.test', 'wrong-password'));
     }
 }

@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Repositories\ReservationRepositoryInterface;
+use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
-use PDO;
 use Throwable;
 
 final readonly class ReservationService
@@ -20,7 +21,7 @@ final readonly class ReservationService
     public const int MAX_PARTY_SIZE = 12;
     public const int DEV_ACCOUNT_ID = 1;
 
-    public function __construct(private PDO $connection)
+    public function __construct(private ReservationRepositoryInterface $reservationRepository)
     {
     }
 
@@ -31,6 +32,7 @@ final readonly class ReservationService
 
     /**
      * @return list<array{time: string, available_tables: int}>
+     * @throws DateMalformedStringException
      */
     public function getSlots(mixed $rawDate, mixed $rawPeople): array
     {
@@ -42,19 +44,6 @@ final readonly class ReservationService
         $minimumStart = new DateTimeImmutable('now', $this->timezone())
             ->modify('+' . self::MINIMUM_ADVANCE_MINUTES . ' minutes');
 
-        $statement = $this->connection->prepare(
-            'SELECT COUNT(*)
-             FROM tables_info t
-             WHERE t.capacity >= :people
-               AND NOT EXISTS (
-                   SELECT 1
-                   FROM reservation r
-                   WHERE r.table_id = t.table_id
-                     AND r.date_of_reservation > :window_start
-                     AND r.date_of_reservation < :window_end
-               )'
-        );
-
         $slots = [];
         for ($slot = $opening; $slot <= $lastStart; $slot = $slot->modify('+' . self::SLOT_INTERVAL_MINUTES . ' minutes')) {
             if ($slot < $minimumStart) {
@@ -62,12 +51,11 @@ final readonly class ReservationService
             }
 
             [$windowStart, $windowEnd] = $this->collisionWindow($slot);
-            $statement->execute([
-                'people' => $people,
-                'window_start' => $windowStart,
-                'window_end' => $windowEnd
-            ]);
-            $availableTables = (int)$statement->fetchColumn();
+            $availableTables = $this->reservationRepository->countAvailableTables(
+                $people,
+                $windowStart,
+                $windowEnd
+            );
 
             $slots[] = [
                 'time' => $slot->format('H:i'),
@@ -87,25 +75,8 @@ final readonly class ReservationService
         $slot = $this->validateSlot($rawDate, $rawTime);
         [$windowStart, $windowEnd] = $this->collisionWindow($slot);
 
-        $statement = $this->connection->prepare(
-            'SELECT t.table_id, t.location, t.capacity,
-                    EXISTS (
-                        SELECT 1
-                        FROM reservation r
-                        WHERE r.table_id = t.table_id
-                          AND r.date_of_reservation > :window_start
-                          AND r.date_of_reservation < :window_end
-                    ) AS is_reserved
-             FROM tables_info t
-             ORDER BY t.table_id'
-        );
-        $statement->execute([
-            'window_start' => $windowStart,
-            'window_end' => $windowEnd
-        ]);
-
         $tables = [];
-        foreach ($statement->fetchAll() as $table) {
+        foreach ($this->reservationRepository->findTables($windowStart, $windowEnd) as $table) {
             $capacity = (int)$table['capacity'];
             $isReserved = (bool)$table['is_reserved'];
             $fitsParty = $capacity >= $people;
@@ -123,6 +94,10 @@ final readonly class ReservationService
         return $tables;
     }
 
+    /**
+     * @throws DateMalformedStringException
+     * @throws Throwable
+     */
     public function createReservation(
         int $accountId,
         mixed $rawDate,
@@ -134,19 +109,12 @@ final readonly class ReservationService
         $slot = $this->validateSlot($rawDate, $rawTime);
         $tableId = $this->validatePositiveInteger($rawTableId, 'Wybierz stolik.');
 
-        $this->connection->beginTransaction();
+        $this->reservationRepository->beginTransaction();
 
         try {
-            $statement = $this->connection->prepare(
-                'SELECT capacity
-                 FROM tables_info
-                 WHERE table_id = :table_id
-                 FOR UPDATE'
-            );
-            $statement->execute(['table_id' => $tableId]);
-            $capacity = $statement->fetchColumn();
+            $capacity = $this->reservationRepository->findCapacityForUpdate($tableId);
 
-            if ($capacity === false) {
+            if ($capacity === null) {
                 throw new InvalidArgumentException('Wybrany stolik nie istnieje.');
             }
             if ((int)$capacity < $people) {
@@ -155,44 +123,22 @@ final readonly class ReservationService
 
             $slot = $this->validateSlot($rawDate, $rawTime);
             [$windowStart, $windowEnd] = $this->collisionWindow($slot);
-            $conflictStatement = $this->connection->prepare(
-                'SELECT 1
-                 FROM reservation
-                 WHERE table_id = :table_id
-                   AND date_of_reservation > :window_start
-                   AND date_of_reservation < :window_end
-                 LIMIT 1'
-            );
-            $conflictStatement->execute([
-                'table_id' => $tableId,
-                'window_start' => $windowStart,
-                'window_end' => $windowEnd
-            ]);
-
-            if ($conflictStatement->fetchColumn() !== false) {
+            if ($this->reservationRepository->hasConflict($tableId, $windowStart, $windowEnd)) {
                 throw new InvalidArgumentException('Ten stolik został już zarezerwowany. Wybierz inny termin lub stolik.');
             }
 
-            $insert = $this->connection->prepare(
-                'INSERT INTO reservation (account_id, table_id, date_of_reservation)
-                 VALUES (:account_id, :table_id, :date_of_reservation)'
-            );
-            $insert->execute([
-                'account_id' => $accountId,
-                'table_id' => $tableId,
-                'date_of_reservation' => $slot->format('Y-m-d H:i:s')
-            ]);
-
-            $this->connection->commit();
+            $this->reservationRepository->create($accountId, $tableId, $slot);
+            $this->reservationRepository->commit();
         } catch (Throwable $exception) {
-            if ($this->connection->inTransaction()) {
-                $this->connection->rollBack();
-            }
+            $this->reservationRepository->rollBack();
 
             throw $exception;
         }
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     private function validateDate(mixed $rawDate): DateTimeImmutable
     {
         if (!is_string($rawDate) || trim($rawDate) === '') {
@@ -247,6 +193,9 @@ final readonly class ReservationService
         return $number;
     }
 
+    /**
+     * @throws DateMalformedStringException
+     */
     private function validateSlot(mixed $rawDate, mixed $rawTime): DateTimeImmutable
     {
         $date = $this->validateDate($rawDate);
@@ -288,6 +237,7 @@ final readonly class ReservationService
 
     /**
      * @return array{0: string, 1: string}
+     * @throws DateMalformedStringException
      */
     private function collisionWindow(DateTimeImmutable $slot): array
     {

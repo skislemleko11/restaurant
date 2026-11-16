@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Mailer;
+use App\Repositories\UserRepositoryInterface;
 use App\Services\Registration\EmailVerificationMailer;
 use App\Services\Registration\RegistrationException;
 use App\Services\Registration\RegistrationService;
@@ -39,7 +40,12 @@ final class RegistrationServiceTest extends TestCase
             ->method('rollBack');
 
         $mailer = $this->createMailer();
-        $service = new RegistrationService($connection, new EmailVerificationMailer($mailer));
+        $userRepository = $this->createMock(UserRepositoryInterface::class);
+        $service = new RegistrationService(
+            $connection,
+            $userRepository,
+            new EmailVerificationMailer($mailer)
+        );
 
         $this->expectException(RegistrationException::class);
         $this->expectExceptionMessageIs(
@@ -47,8 +53,8 @@ final class RegistrationServiceTest extends TestCase
         );
         $this->expectExceptionCode(0);
 
-        $connection->expects(self::once())
-            ->method('prepare')
+        $userRepository->expects(self::once())
+            ->method('create')
             ->willThrowException(new RuntimeException('database failure'));
 
         $service->register('user@example.test', 'password');

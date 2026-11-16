@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Services\Registration;
 
-use PDO;
+use App\Repositories\UserRepositoryInterface;
 
 final readonly class EmailVerificationService
 {
-    public function __construct(private PDO $connection)
+    public function __construct(private UserRepositoryInterface $userRepository)
     {
     }
 
@@ -17,15 +17,6 @@ final readonly class EmailVerificationService
             return false;
         }
 
-        $statement = $this->connection->prepare(
-            'UPDATE users
-             SET verfication_token_used_at = UTC_TIMESTAMP()
-             WHERE verification_token = :token
-               AND verification_token_expires_at > UTC_TIMESTAMP()
-               AND verfication_token_used_at IS NULL'
-        );
-        $statement->execute(['token' => $token]);
-
-        return $statement->rowCount() === 1;
+        return $this->userRepository->verifyEmail($token);
     }
 }

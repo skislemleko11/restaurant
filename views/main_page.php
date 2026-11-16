@@ -13,7 +13,7 @@
     <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
 </head>
 <body>
-    <?php require __DIR__ . '/templates/header.html'; ?>
+    <?php require __DIR__ . '/templates/header.php'; ?>
 
     <?php require __DIR__ . '/templates/footer.html'; ?>
 </body>
