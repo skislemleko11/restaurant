@@ -27,6 +27,11 @@ const theme_palette = {
         '--success-bg': '#d4edda',
         '--success-text': '#155724',
         '--success-border': '#c3e6cb',
+        '--blocked-bg': '#f8d7da',
+        '--blocked-text': '#721c24',
+        '--blocked-border': '#f5c6cb',
+        '--danger-bg': '#b02a37',
+        '--danger-hover': '#92222d',
         '--disabled-bg': '#cccccc',
         '--disabled-text': '#666666'
     },
@@ -51,6 +56,11 @@ const theme_palette = {
         '--success-bg': '#123524',
         '--success-text': '#86efac',
         '--success-border': '#14532d',
+        '--blocked-bg': '#3b181c',
+        '--blocked-text': '#fca5a5',
+        '--blocked-border': '#7f1d1d',
+        '--danger-bg': '#dc2626',
+        '--danger-hover': '#b91c1c',
         '--disabled-bg': '#374151',
         '--disabled-text': '#9ca3af'
     }
