@@ -15,6 +15,70 @@
     --error-text: #721c24;
     --success-bg: #d4edda;
     --success-text: #155724;
+    --blocked-bg: #f8d7da;
+    --blocked-text: #721c24;
+}
+
+.admin_schedule_main {
+    flex-grow: 1;
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.schedule_card {
+    background: var(--white);
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.schedule_form {
+    max-width: none;
+    padding: 0;
+    box-shadow: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    align-items: end;
+}
+
+.schedule_form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.blocked_period {
+    background: var(--blocked-bg);
+    color: var(--blocked-text);
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 12px;
+}
+
+.blocked_period_heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.blocked_badge {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.inline_form {
+    display: inline;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.danger_button {
+    background: #b02a37;
 }
 
 body {

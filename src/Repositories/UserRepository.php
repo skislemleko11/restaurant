@@ -55,7 +55,8 @@ final readonly class UserRepository implements UserRepositoryInterface
         string $passwordHash,
         string $verificationToken,
         string $expiresAt
-    ): void {
+    ): void
+    {
         $statement = $this->connection->prepare(
             'INSERT INTO users (email, password_hash, verification_token, verification_token_expires_at)
              VALUES (:email, :password_hash, :verification_token, :expires_at)'
@@ -91,5 +92,15 @@ final readonly class UserRepository implements UserRepositoryInterface
             'password_hash' => $passwordHash,
             'account_id' => $accountId,
         ]);
+    }
+
+    public function isAdmin(int $accountId): bool
+    {
+        $statement = $this->connection->prepare(
+            'SELECT 1 FROM users WHERE account_id = :account_id AND role = :role LIMIT 1'
+        );
+        $statement->execute(['account_id' => $accountId, 'role' => 'admin']);
+
+        return $statement->fetchColumn() !== false;
     }
 }
