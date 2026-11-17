@@ -1,19 +1,20 @@
+<?php
+/** @var SessionInterface $session */
+use Velo\Session\Session\SessionInterface;
+?>
 <header>
     <nav>
+        <a href="/" class="nav_logo_link">
+            <img class="logo" src="/imgs/logo.png" alt="Logo restauracji Smaki Miasta">
+        </a>
         <ul class="nav_links">
-            <li class="nav_item"><a href="/"><img class="logo" src="/imgs/logo.png" alt="Logo restauracji Smaki Miasta"></a>
-            </li>
-            <div class="separator">
-                <!--TODO: PLS YURII FIX THIS, IT'S SEMANTICLY INCORRECT -->
-                <li><a href="/">Strona główna</a></li>
-                <li><a href="/menu">Menu</a></li>
-                <li><a href="/reservation">Rezerwacja</a></li>
-                <li><a href="/contact">Kontakt</a></li>
-                <?php /** @var SessionInterface $session */
-
-                use Velo\Session\Session\SessionInterface;
-
-                if ($session->has('user_id')): ?>
+            <li class="theme-button"><img src="/imgs/theme.png" alt="Zmień motyw" class="theme"></li>
+            <li><a href="/">Strona główna</a></li>
+            <li><a href="/menu">Menu</a></li>
+            <li><a href="/reservation">Rezerwacja</a></li>
+            <li><a href="/contact">Kontakt</a></li>
+            <?php if ($session->has('user_id')): ?>
+                <li>
                     <details class="account-menu">
                         <summary aria-label="Konto">
                             <img src="/imgs/register.png" alt="Konto" class="register-icon">
@@ -24,10 +25,14 @@
                             <button type="submit" class="logout-button">Wyloguj</button>
                         </form>
                     </details>
-                <?php else: ?>
-                    <li><a href="/login"><img src="/imgs/register.png" alt="Konto" class="register-icon"></a></li>
-                <?php endif; ?>
-            </div>
+                </li>
+            <?php else: ?>
+                <li>
+                    <a href="/login">
+                        <img src="/imgs/register.png" alt="Konto" class="register-icon">
+                    </a>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
 </header>

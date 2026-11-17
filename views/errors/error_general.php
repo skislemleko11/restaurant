@@ -19,5 +19,6 @@
     <?php
     require __DIR__ . "/../templates/footer.html";
     ?>
+<script src="/js/color_theme.js"></script>
 </body>
 </html>

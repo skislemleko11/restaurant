@@ -33,6 +33,7 @@ header {
     width: 100%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
+
 nav {
     height: 80px;
     width: 100%;
@@ -41,6 +42,7 @@ nav {
     justify-content: space-between;
     padding: 0 20px;
 }
+
 .nav_logo_link {
     display: flex;
     align-items: center;
@@ -58,11 +60,13 @@ nav {
     align-items: center;
     text-decoration: none;
 }
-.nav_links{
+
+.nav_links {
     display: flex;
     align-items: center;
     gap: 20px;
 }
+
 .logo {
     max-height: 50px;
     width: auto;
@@ -157,7 +161,7 @@ footer {
     padding: 0 15px;
 }
 
-.footer_container p, 
+.footer_container p,
 .footer_container a {
     margin: 8px 0;
     font-size: 15px;
@@ -258,11 +262,13 @@ form input[type="submit"]:hover {
     max-width: 400px;
     margin: 0 0 20px 0;
 }
-.error404{
-    color: var(--primary-color); 
+
+.error404 {
+    color: var(--primary-color);
     font-weight: bold;
     text-decoration: none;
 }
+
 .register_main > ul li {
     margin-bottom: 5px;
 }
@@ -283,6 +289,7 @@ form input[type="submit"]:hover {
     text-align: center;
     font-weight: 600;
 }
+
 .main_verification {
     flex-grow: 1;
     display: flex;
@@ -292,10 +299,12 @@ form input[type="submit"]:hover {
     padding: 40px 20px;
     text-align: center;
 }
-.normal{
+
+.normal {
     background-color: var(--bg-color) !important;
     border: none !important;
 }
+
 .main_verification p {
     font-size: 18px;
     color: var(--text-light);
@@ -303,6 +312,7 @@ form input[type="submit"]:hover {
     line-height: 1.5;
     margin-top: 10px;
 }
+
 .dont_have_account, .already_have_account {
     color: var(--secondary-color);
     text-decoration: none;
@@ -477,6 +487,20 @@ form input[type="submit"]:hover {
     cursor: not-allowed;
 }
 
+.theme {
+    width: 45px;
+    height: 45px;
+    padding: 10px;
+    object-fit: contain;
+    display: block;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.theme:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
 
 @media (max-width: 768px) {
     nav {
@@ -522,6 +546,7 @@ form input[type="submit"]:hover {
     form {
         padding: 20px;
     }
+
     .reservation_main {
         padding: 20px 10px;
     }
@@ -533,5 +558,9 @@ form input[type="submit"]:hover {
     .reservation_row {
         flex-direction: column;
         gap: 10px;
+    }
+
+    .theme {
+        margin: 0 auto;
     }
 }

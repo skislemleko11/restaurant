@@ -22,7 +22,7 @@ $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTE
     <script src="/js/reservation.js" defer></script>
 </head>
 <body>
-<?php require __DIR__ . '/templates/header.html'; ?>
+<?php require __DIR__ . '/templates/header.php'; ?>
 <main class="reservation_main">
     <h1>Rezerwacja stolika</h1>
 
@@ -71,5 +71,6 @@ $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTE
     </form>
 </main>
 <?php require __DIR__ . '/templates/footer.html'; ?>
+<script src="/js/color_theme.js"></script>
 </body>
 </html>

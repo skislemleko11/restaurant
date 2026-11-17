@@ -19,7 +19,7 @@ use Velo\Session\Session\SessionInterface;
     <title>Rejestracja</title>
 </head>
 <body>
-<?php require __DIR__ . '/templates/header.html'; ?>
+<?php require __DIR__ . '/templates/header.php'; ?>
 
 <main>
     <div class="register_main">
@@ -47,5 +47,6 @@ use Velo\Session\Session\SessionInterface;
 </main>
 
 <?php require __DIR__ . '/templates/footer.html'; ?>
+<script src="/js/color_theme.js"></script>
 </body>
 </html>
