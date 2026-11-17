@@ -16,6 +16,7 @@ use Velo\Session\Session\SessionInterface;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
     <title>Rejestracja</title>
 </head>
 <body>
@@ -41,8 +42,10 @@ use Velo\Session\Session\SessionInterface;
             <input type="submit" value="Zaloguj się">
         </form>
 
-        <p><a href="/forgot-password">Nie pamiętasz hasła?</a></p>
-        <p><a href="/register" class="dont_have_account">Nie masz konta? Zarejestruj się</a></p>
+        <div class="auth_links">
+            <a href="/forgot-password" class="dont_have_account">Nie pamiętasz hasła?</a>
+            <a href="/register" class="dont_have_account">Nie masz konta? Zarejestruj się</a>
+        </div>
     </div>
 </main>
 

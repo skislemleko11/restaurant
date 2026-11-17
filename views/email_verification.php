@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Weryfikacja adresu email</title>
     <link rel="stylesheet" href="/css/style.css">
-
+    <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
 </head>
 <body>
 <?php

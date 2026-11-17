@@ -13,6 +13,8 @@ use App\Controllers\Registration\VerifyEmailController;
 use Velo\Middlewares\AntiCsrf\AntiCsrfMiddleware;
 use Velo\Middlewares\AuthMiddleware\WebAuthMiddleware;
 use Velo\Router\Router\Router;
+use App\Controllers\MenuController;
+use App\Controllers\ContactController;
 
 /**
  * @var Router $router
@@ -54,3 +56,5 @@ $router->post('/reset-password/{token}', ActionAuthController::class, 'resetPass
     ->addMiddleware(AntiCsrfMiddleware::class);
 $router->post('/logout', ActionAuthController::class, 'logout')
     ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/menu', MenuController::class);
+$router->get('/contact', ContactController::class);

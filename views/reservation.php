@@ -20,6 +20,7 @@ $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTE
     <title>Rezerwacja stolika</title>
     <link rel="stylesheet" href="/css/style.css">
     <script src="/js/reservation.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/imgs/logo.ico">
 </head>
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
