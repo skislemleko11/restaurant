@@ -51,6 +51,9 @@ final readonly class ReservationService
             }
 
             [$windowStart, $windowEnd] = $this->collisionWindow($slot);
+            if ($this->reservationRepository->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
+                continue;
+            }
             $availableTables = $this->reservationRepository->countAvailableTables(
                 $people,
                 $windowStart,
@@ -74,6 +77,9 @@ final readonly class ReservationService
         $people = $this->validatePeople($rawPeople);
         $slot = $this->validateSlot($rawDate, $rawTime);
         [$windowStart, $windowEnd] = $this->collisionWindow($slot);
+        if ($this->reservationRepository->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
+            throw new InvalidArgumentException('Ten termin jest zablokowany. Wybierz inny termin.');
+        }
 
         $tables = [];
         foreach ($this->reservationRepository->findTables($windowStart, $windowEnd) as $table) {
@@ -123,6 +129,9 @@ final readonly class ReservationService
 
             $slot = $this->validateSlot($rawDate, $rawTime);
             [$windowStart, $windowEnd] = $this->collisionWindow($slot);
+            if ($this->reservationRepository->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
+                throw new InvalidArgumentException('Ten termin jest zablokowany. Wybierz inny termin.');
+            }
             if ($this->reservationRepository->hasConflict($tableId, $windowStart, $windowEnd)) {
                 throw new InvalidArgumentException('Ten stolik został już zarezerwowany. Wybierz inny termin lub stolik.');
             }

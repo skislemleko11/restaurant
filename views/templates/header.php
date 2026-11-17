@@ -1,6 +1,8 @@
 <?php
 /** @var SessionInterface $session */
+
 use Velo\Session\Session\SessionInterface;
+
 ?>
 <header>
     <nav>

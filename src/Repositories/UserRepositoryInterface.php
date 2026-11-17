@@ -21,4 +21,6 @@ interface UserRepositoryInterface
     public function verifyEmail(string $token): bool;
 
     public function updatePassword(int $accountId, string $passwordHash): void;
+
+    public function isAdmin(int $accountId): bool;
 }
