@@ -19,7 +19,6 @@ declare(strict_types=1);
 <?php require __DIR__ . '/templates/header.php'; ?>
 
 <main class="home_main">
-    <!-- 1. Hero ze zdjęciem w tle -->
     <section class="hero_banner" style="background-image: url('/imgs/hero.jpg');">
         <div class="hero_overlay">
             <p class="hero_keywords">Restauracja &bull; Smak &bull; Atmosfera &bull; Wspomnienia</p>
