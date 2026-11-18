@@ -51,7 +51,12 @@ final readonly class ReservationService
             }
 
             [$windowStart, $windowEnd] = $this->collisionWindow($slot);
-            if ($this->reservationRepository->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
+            [$blockedStart, $blockedEnd] = $this->blockedWindow($slot);
+            if ($this->reservationRepository->hasBlockedPeriodConflict($blockedStart, $blockedEnd)) {
+                continue;
+            }
+            if ($this->reservationRepository->sumReservedPeople($windowStart, $windowEnd) + $people
+                > $this->reservationRepository->sumActiveTableCapacity()) {
                 continue;
             }
             $availableTables = $this->reservationRepository->countAvailableTables(
@@ -77,7 +82,8 @@ final readonly class ReservationService
         $people = $this->validatePeople($rawPeople);
         $slot = $this->validateSlot($rawDate, $rawTime);
         [$windowStart, $windowEnd] = $this->collisionWindow($slot);
-        if ($this->reservationRepository->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
+        [$blockedStart, $blockedEnd] = $this->blockedWindow($slot);
+        if ($this->reservationRepository->hasBlockedPeriodConflict($blockedStart, $blockedEnd)) {
             throw new InvalidArgumentException('Ten termin jest zablokowany. Wybierz inny termin.');
         }
 
@@ -129,14 +135,19 @@ final readonly class ReservationService
 
             $slot = $this->validateSlot($rawDate, $rawTime);
             [$windowStart, $windowEnd] = $this->collisionWindow($slot);
-            if ($this->reservationRepository->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
+            [$blockedStart, $blockedEnd] = $this->blockedWindow($slot);
+            if ($this->reservationRepository->hasBlockedPeriodConflict($blockedStart, $blockedEnd)) {
                 throw new InvalidArgumentException('Ten termin jest zablokowany. Wybierz inny termin.');
             }
             if ($this->reservationRepository->hasConflict($tableId, $windowStart, $windowEnd)) {
                 throw new InvalidArgumentException('Ten stolik został już zarezerwowany. Wybierz inny termin lub stolik.');
             }
+            if ($this->reservationRepository->sumReservedPeople($windowStart, $windowEnd) + $people
+                > $this->reservationRepository->sumActiveTableCapacity()) {
+                throw new InvalidArgumentException('Limit miejsc na tę godzinę został wyczerpany.');
+            }
 
-            $this->reservationRepository->create($accountId, $tableId, $slot);
+            $this->reservationRepository->create($accountId, $tableId, $slot, $people);
             $this->reservationRepository->commit();
         } catch (Throwable $exception) {
             $this->reservationRepository->rollBack();
@@ -255,6 +266,20 @@ final readonly class ReservationService
         return [
             $slot->modify('-' . $duration . ' minutes')->format('Y-m-d H:i:s'),
             $slot->modify('+' . $duration . ' minutes')->format('Y-m-d H:i:s')
+        ];
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     * @throws DateMalformedStringException
+     */
+    private function blockedWindow(DateTimeImmutable $slot): array
+    {
+        $duration = $this->getReservationDurationMinutes();
+
+        return [
+            $slot->format('Y-m-d H:i:s'),
+            $slot->modify('+' . $duration . ' minutes')->format('Y-m-d H:i:s'),
         ];
     }
 

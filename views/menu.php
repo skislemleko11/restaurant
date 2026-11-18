@@ -18,12 +18,13 @@
 <main class="menu_main">
     <h1>Nasze Menu</h1>
 
-    <a href="/pdf/menu.pdf" target="_blank" class="download_menu_btn">
+    <?php $cacheKey = $menuModifiedAt === null ? '0' : str_replace(['-', ':', ' '], '', $menuModifiedAt); ?>
+    <a href="/menu/pdf?v=<?= urlencode($cacheKey) ?>" target="_blank" class="download_menu_btn">
         Otwórz PDF w nowej karcie / Pobierz
     </a>
 
     <div class="pdf_frame_wrapper">
-        <iframe src="/pdf/menu.pdf#view=FitH&navpanes=0" title="Menu restauracji Smaki Miasta"></iframe>
+        <iframe src="/menu/pdf?v=<?= urlencode($cacheKey) ?>#view=FitH&navpanes=0" title="Menu restauracji Smaki Miasta"></iframe>
     </div>
 </main>
 

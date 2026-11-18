@@ -31,14 +31,11 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
     public function countAvailableTables(int $people, string $windowStart, string $windowEnd): int
     {
-        if ($this->hasBlockedPeriodConflict($windowStart, $windowEnd)) {
-            return 0;
-        }
-
         $statement = $this->connection->prepare(
             'SELECT COUNT(*)
              FROM tables_info t
              WHERE t.capacity >= :people
+               AND t.is_active = 1
                AND NOT EXISTS (
                    SELECT 1
                    FROM reservation r
@@ -59,7 +56,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     public function findTables(string $windowStart, string $windowEnd): array
     {
         $statement = $this->connection->prepare(
-            'SELECT t.table_id, t.location, t.capacity,
+            'SELECT t.table_id, t.name, t.location, t.capacity,
                     EXISTS (
                         SELECT 1
                         FROM reservation r
@@ -68,6 +65,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                           AND r.date_of_reservation < :window_end
                     ) AS is_reserved
              FROM tables_info t
+             WHERE t.is_active = 1
              ORDER BY t.table_id'
         );
         $statement->execute([
@@ -83,13 +81,40 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         $statement = $this->connection->prepare(
             'SELECT capacity
              FROM tables_info
-             WHERE table_id = :table_id
+             WHERE table_id = :table_id AND is_active = 1
              FOR UPDATE'
         );
         $statement->execute(['table_id' => $tableId]);
         $capacity = $statement->fetchColumn();
 
         return $capacity === false ? null : (int)$capacity;
+    }
+
+    public function sumReservedPeople(string $windowStart, string $windowEnd): int
+    {
+        $statement = $this->connection->prepare(
+            'SELECT COALESCE(SUM(number_of_people), 0)
+             FROM reservation
+             WHERE date_of_reservation > :window_start
+               AND date_of_reservation < :window_end'
+        );
+        $statement->execute([
+            'window_start' => $windowStart,
+            'window_end' => $windowEnd,
+        ]);
+
+        return (int)$statement->fetchColumn();
+    }
+
+    public function sumActiveTableCapacity(): int
+    {
+        $statement = $this->connection->query(
+            'SELECT COALESCE(SUM(capacity), 0)
+             FROM tables_info
+             WHERE is_active = 1'
+        );
+
+        return (int)$statement->fetchColumn();
     }
 
     public function hasConflict(int $tableId, string $windowStart, string $windowEnd): bool
@@ -128,16 +153,17 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         return $statement->fetchColumn() !== false;
     }
 
-    public function create(int $accountId, int $tableId, DateTimeImmutable $slot): void
+    public function create(int $accountId, int $tableId, DateTimeImmutable $slot, int $numberOfPeople): void
     {
         $statement = $this->connection->prepare(
-            'INSERT INTO reservation (account_id, table_id, date_of_reservation)
-             VALUES (:account_id, :table_id, :date_of_reservation)'
+            'INSERT INTO reservation (account_id, table_id, date_of_reservation, number_of_people)
+             VALUES (:account_id, :table_id, :date_of_reservation, :number_of_people)'
         );
         $statement->execute([
             'account_id' => $accountId,
             'table_id' => $tableId,
             'date_of_reservation' => $slot->format('Y-m-d H:i:s'),
+            'number_of_people' => $numberOfPeople,
         ]);
     }
 
@@ -200,6 +226,77 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             'DELETE FROM reservation_block WHERE block_id = :block_id'
         );
         $statement->execute(['block_id' => $id]);
+
+        return $statement->rowCount() > 0;
+    }
+
+    public function findAllTables(): array
+    {
+        $statement = $this->connection->query(
+            'SELECT table_id, name, location, capacity, is_active
+             FROM tables_info
+             ORDER BY table_id'
+        );
+
+        return $statement->fetchAll();
+    }
+
+    public function createTable(string $name, string $location, int $capacity, bool $isActive): void
+    {
+        $statement = $this->connection->prepare(
+            'INSERT INTO tables_info (name, location, capacity, is_active)
+             VALUES (:name, :location, :capacity, :is_active)'
+        );
+        $statement->execute([
+            'name' => $name,
+            'location' => $location,
+            'capacity' => $capacity,
+            'is_active' => $isActive ? 1 : 0,
+        ]);
+    }
+
+    public function updateTable(int $tableId, string $name, string $location, int $capacity, bool $isActive): bool
+    {
+        $statement = $this->connection->prepare(
+            'UPDATE tables_info
+             SET name = :name, location = :location, capacity = :capacity, is_active = :is_active
+             WHERE table_id = :table_id'
+        );
+        $statement->execute([
+            'table_id' => $tableId,
+            'name' => $name,
+            'location' => $location,
+            'capacity' => $capacity,
+            'is_active' => $isActive ? 1 : 0,
+        ]);
+
+        if ($statement->rowCount() > 0) {
+            return true;
+        }
+        $exists = $this->connection->prepare(
+            'SELECT 1 FROM tables_info WHERE table_id = :table_id LIMIT 1'
+        );
+        $exists->execute(['table_id' => $tableId]);
+
+        return $exists->fetchColumn() !== false;
+    }
+
+    public function tableHasReservations(int $tableId): bool
+    {
+        $statement = $this->connection->prepare(
+            'SELECT 1 FROM reservation WHERE table_id = :table_id LIMIT 1'
+        );
+        $statement->execute(['table_id' => $tableId]);
+
+        return $statement->fetchColumn() !== false;
+    }
+
+    public function deleteTable(int $tableId): bool
+    {
+        $statement = $this->connection->prepare(
+            'DELETE FROM tables_info WHERE table_id = :table_id'
+        );
+        $statement->execute(['table_id' => $tableId]);
 
         return $statement->rowCount() > 0;
     }

@@ -49,6 +49,63 @@ body {
     padding: 40px 20px;
 }
 
+.admin_menu_main {
+    flex-grow: 1;
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.menu_upload_form {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr);
+    gap: 12px;
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.menu_upload_form input[type="file"] {
+    padding: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.menu_archive {
+    display: grid;
+    gap: 12px;
+}
+
+.menu_archive_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.menu_archive_item p {
+    margin: 5px 0 0;
+}
+
+.menu_archive_actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu_archive_actions a,
+.download_menu_btn {
+    color: var(--primary-text);
+    background: var(--primary-color);
+    border-radius: 5px;
+    padding: 9px 14px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
 .schedule_card {
     background-color: var(--card-bg);
     padding: 25px;
@@ -102,6 +159,20 @@ body {
 .blocked_badge {
     font-size: 12px;
     font-weight: bold;
+}
+
+.table_management_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.table_management_item {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    background-color: var(--blocked-bg);
 }
 
 .inline_form {
@@ -212,17 +283,40 @@ nav li a:hover {
 }
 
 .account-menu form {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 1;
-    width: auto;
+    position: static;
+    width: 100%;
     min-width: 130px;
     padding: 8px;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 5px;
+    border-radius: 5px 5px 0 0;
+}
+
+.account-menu-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    min-width: 210px;
+    max-width: calc(100vw - 20px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.account-menu-links {
+    display: grid;
+    min-width: 210px;
+    padding: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-top: 0;
+    border-radius: 0 0 5px 5px;
+}
+
+.account-menu-links a {
+    display: block;
+    color: var(--text-color) !important;
+    font-size: 15px !important;
+    padding: 9px 10px !important;
 }
 
 .logout-button {

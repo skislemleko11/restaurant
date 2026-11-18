@@ -6,6 +6,8 @@ use App\Controllers\Auth\ShowAuthController;
 use App\Controllers\HomeController;
 use App\Controllers\ReservationController;
 use App\Controllers\AdminScheduleController;
+use App\Controllers\AdminTableController;
+use App\Controllers\AdminMenuController;
 use App\Middlewares\AdminMiddleware;
 use App\Controllers\Registration\RegisterController;
 use App\Controllers\Registration\ShowRegistrationController;
@@ -45,6 +47,38 @@ $router->post('/admin/schedule/blocks/{id}/delete', AdminScheduleController::cla
     ->addMiddleware(WebAuthMiddleware::class)
     ->addMiddleware(AdminMiddleware::class)
     ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/admin/tables', AdminTableController::class)
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class);
+$router->post('/admin/tables', AdminTableController::class, 'store')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class)
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->post('/admin/tables/{id}/update', AdminTableController::class, 'update')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class)
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->post('/admin/tables/{id}/delete', AdminTableController::class, 'delete')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class)
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/admin/menu', AdminMenuController::class)
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class);
+$router->post('/admin/menu/upload', AdminMenuController::class, 'upload')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class)
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->post('/admin/menu/archive/{name}/delete', AdminMenuController::class, 'deleteArchive')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class)
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/admin/menu/preview', AdminMenuController::class, 'preview')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class);
+$router->get('/admin/menu/archive/{name}/preview', AdminMenuController::class, 'previewArchive')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class);
 $router->get('/login', ShowAuthController::class, 'login');
 $router->post('/login', ActionAuthController::class, 'login')
     ->addMiddleware(AntiCsrfMiddleware::class);
@@ -57,4 +91,5 @@ $router->post('/reset-password/{token}', ActionAuthController::class, 'resetPass
 $router->post('/logout', ActionAuthController::class, 'logout')
     ->addMiddleware(AntiCsrfMiddleware::class);
 $router->get('/menu', MenuController::class);
+$router->get('/menu/pdf', MenuController::class, 'preview');
 $router->get('/contact', ContactController::class);
