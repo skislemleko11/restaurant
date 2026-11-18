@@ -21,11 +21,18 @@ use Velo\Session\Session\SessionInterface;
                         <summary aria-label="Konto">
                             <img src="/imgs/register.png" alt="Konto" class="register-icon">
                         </summary>
-                        <form method="post" action="/logout">
-                            <input type="hidden" name="csrf_token"
-                                   value="<?= htmlspecialchars((string)$session->get('csrf_token', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
-                            <button type="submit" class="logout-button">Wyloguj</button>
-                        </form>
+                        <div class="account-menu-panel">
+                            <form method="post" action="/logout">
+                                <input type="hidden" name="csrf_token"
+                                       value="<?= htmlspecialchars((string)$session->get('csrf_token', ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>">
+                                <button type="submit" class="logout-button">Wyloguj</button>
+                            </form>
+                            <div class="account-menu-links">
+                                <a href="/admin/menu">Zarządzanie menu</a>
+                                <a href="/admin/schedule">Kalendarz dostępności</a>
+                                <a href="/admin/tables">Zarządzanie stolikami</a>
+                            </div>
+                        </div>
                     </details>
                 </li>
             <?php else: ?>

@@ -25,7 +25,8 @@ CREATE TABLE `reservation`
     `reservation_id`      int(10) UNSIGNED NOT NULL,
     `account_id`          int(10) UNSIGNED NOT NULL,
     `table_id`            int(10) UNSIGNED NOT NULL,
-    `date_of_reservation` datetime         NOT NULL
+    `date_of_reservation` datetime         NOT NULL,
+    `number_of_people`    int(10) UNSIGNED NOT NULL DEFAULT 1
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
@@ -43,8 +44,10 @@ CREATE TABLE `reservation_block`
 CREATE TABLE `tables_info`
 (
     `table_id` int(10) UNSIGNED NOT NULL,
+    `name`     varchar(255)     NOT NULL,
     `location` varchar(255)     NOT NULL,
-    `capacity` int(10) UNSIGNED NOT NULL
+    `capacity` int(10) UNSIGNED NOT NULL,
+    `is_active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
@@ -77,7 +80,8 @@ ALTER TABLE `reservation_block`
     ADD KEY `idx_reservation_block_dates` (`starts_at`, `ends_at`);
 
 ALTER TABLE `tables_info`
-    ADD PRIMARY KEY (`table_id`);
+    ADD PRIMARY KEY (`table_id`),
+    ADD UNIQUE KEY `uq_tables_name` (`name`);
 
 ALTER TABLE `users`
     ADD PRIMARY KEY (`account_id`),
@@ -108,14 +112,14 @@ COMMIT;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
 
 
-INSERT INTO tables_info
-VALUES (1, 'Sala główna', 2),
-       (2, 'Sala główna', 2),
-       (3, 'Sala główna', 4),
-       (4, 'Sala główna', 4),
-       (5, 'Sala główna', 4),
-       (6, 'Sala główna', 6),
-       (7, 'Sala główna', 6),
-       (8, 'Taras', 2),
-       (9, 'Taras', 4),
-       (10, 'Taras', 8);
+INSERT INTO tables_info (table_id, name, location, capacity, is_active)
+VALUES (1, 'Stolik 1', 'Sala główna', 2, 1),
+       (2, 'Stolik 2', 'Sala główna', 2, 1),
+       (3, 'Stolik 3', 'Sala główna', 4, 1),
+       (4, 'Stolik 4', 'Sala główna', 4, 1),
+       (5, 'Stolik 5', 'Sala główna', 4, 1),
+       (6, 'Stolik 6', 'Sala główna', 6, 1),
+       (7, 'Stolik 7', 'Sala główna', 6, 1),
+       (8, 'Stolik 8', 'Taras', 2, 1),
+       (9, 'Stolik 9', 'Taras', 4, 1),
+       (10, 'Stolik 10', 'Taras', 8, 1);
