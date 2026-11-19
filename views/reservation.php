@@ -24,7 +24,7 @@ $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTE
 </head>
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
-<main class="reservation_main">
+<main class="reservation_main" id="main-content">
     <h1>Rezerwacja stolika</h1>
 
     <?php foreach ($errors as $error): ?>

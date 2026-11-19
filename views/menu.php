@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smaki Miasta - Restauracja</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <meta name="description"
           content="Smaki Miasta to restauracja oferująca najlepsze dania ze świeżych składników. Sprawdź nasze menu i zarezerwuj stolik online.">
     <meta name="keywords"
           content="restauracja, jedzenie, obiad, kolacja, rezerwacja stolika, menu">
     <meta name="robots" content="all">
-    <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/imgs/logo.ico">
 </head>
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
 
-<main class="menu_main">
+<main class="menu_main" id="main-content">
     <h1>Nasze Menu</h1>
 
     <?php $cacheKey = $menuModifiedAt === null ? '0' : str_replace(['-', ':', ' '], '', $menuModifiedAt); ?>

@@ -18,8 +18,8 @@ declare(strict_types=1);
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
 
-<main class="home_main">
-    <section class="hero_banner" style="background-image: url('/imgs/hero.jpg');">
+<main class="home_main" id="main-content">
+    <section class="hero_banner">
         <div class="hero_overlay">
             <p class="hero_keywords">Restauracja &bull; Smak &bull; Atmosfera &bull; Wspomnienia</p>
             <h1>Smaki Miasta</h1>
@@ -29,8 +29,6 @@ declare(strict_types=1);
             </div>
         </div>
     </section>
-
-    <!-- 2. Ciepłe powitanie (styl Umami) -->
     <section class="welcome_section">
         <h2>Dzień dobry!</h2>
         <p class="welcome_lead">Miło nam, że zaglądasz na naszą stronę!</p>
@@ -40,8 +38,6 @@ declare(strict_types=1);
             Wypiekamy własne pieczywo, przygotowujemy sosy od podstaw i pracujemy na sezonowych produktach.
         </p>
     </section>
-
-    <!-- 3. Naprzemienne sekcje zdjęcie + opis -->
     <section class="split_section">
         <div class="split_image">
             <img src="/imgs/menu-dish.png" alt="Autorskie danie w restauracji Smaki Miasta" loading="lazy">

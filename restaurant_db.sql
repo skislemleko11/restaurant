@@ -61,7 +61,7 @@ CREATE TABLE `users`
     `verfication_token_used_at`     datetime                                   DEFAULT NULL,
     `verification_token`            varchar(64)                       NOT NULL,
     `verification_token_expires_at` datetime                          NOT NULL,
-    `role`                          enum ('client','manager','admin') NOT NULL DEFAULT 'client'
+    `role`                          enum ('client','admin') NOT NULL DEFAULT 'client'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;

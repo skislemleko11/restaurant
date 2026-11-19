@@ -24,12 +24,12 @@ $time = static fn(string $value): string => substr($value, 11, 5);
     <meta name="keywords"
           content="restauracja, jedzenie, obiad, kolacja, rezerwacja stolika, menu">
     <meta name="robots" content="all">
-    <link rel="icon" type="image/x-icon" href="imgs/logo.ico">
+    <link rel="icon" type="image/x-icon" href="/imgs/logo.ico">
 </head>
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
-<main class="admin_schedule_main">
-    <h1>Kalendarz dostępności restauracji</h1>
+<main class="admin_schedule_main" id="main-content">
+    <h1 class="admin_page_title">Dostępność restauracji</h1>
     <?php foreach ($errors as $error): ?>
         <div class="alert alert-error" role="alert"><?= $escape($error) ?></div>
     <?php endforeach; ?>
@@ -37,9 +37,9 @@ $time = static fn(string $value): string => substr($value, 11, 5);
         <div class="alert alert-success" role="status"><?= $escape($message) ?></div>
     <?php endforeach; ?>
 
-    <section class="schedule_card">
-        <h2>Dodaj blokadę terminu</h2>
-        <p>Wybierz zakres dat. Pozostaw godziny puste, aby zablokować całe dni.</p>
+    <section class="schedule_card schedule_admin_card">
+        <h2>Dodaj nieczynność</h2>
+        <p class="schedule_helper">Wybierz daty i, jeśli to potrzebne, godzinę. Puste pola godzin oznaczają cały dzień.</p>
         <form method="post" action="/admin/schedule/blocks" class="schedule_form">
             <input type="hidden" name="csrf_token" value="<?= $escape($token) ?>">
             <label>Od <input type="date" name="start_date" required></label>
@@ -47,28 +47,31 @@ $time = static fn(string $value): string => substr($value, 11, 5);
             <label>Od godziny <input type="time" name="start_time"></label>
             <label>Do godziny <input type="time" name="end_time"></label>
             <label>Powód (opcjonalnie) <input type="text" name="reason" maxlength="255"></label>
-            <button type="submit">Zablokuj termin</button>
+            <button type="submit">Dodaj nieczynność</button>
         </form>
     </section>
 
-    <section class="schedule_card">
+    <section class="schedule_card schedule_admin_card">
         <h2>Zablokowane terminy</h2>
         <?php if ($blocks === []): ?>
-            <p>Brak zaplanowanych blokad w najbliższym roku.</p>
+            <p class="schedule_empty">Brak zaplanowanych blokad w najbliższym roku.</p>
         <?php else: ?>
             <div class="blocked_periods">
                 <?php foreach ($blocks as $block): ?>
                     <?php $wholeDay = $time($block['start']) === '00:00' && $time($block['end']) === '23:59'; ?>
                     <article class="blocked_period">
                         <div class="blocked_period_heading">
-                            <strong><?= $escape($date($block['start'])) ?>
-                                – <?= $escape($date($block['end'])) ?></strong>
+                            <div class="blocked_period_dates">
+                                <span>Nieczynność</span>
+                                <strong><?= $escape($date($block['start'])) ?>
+                                    – <?= $escape($date($block['end'])) ?></strong>
+                            </div>
                             <span class="blocked_badge">ZABLOKOWANE</span>
                         </div>
-                        <p><?= $wholeDay ? 'Cały dzień' : $escape($time($block['start']) . ' – ' . $time($block['end'])) ?>
+                        <p class="blocked_period_details"><?= $wholeDay ? 'Cały dzień' : $escape($time($block['start']) . ' – ' . $time($block['end'])) ?>
                             <?php if ($block['reason'] !== null): ?> · <?= $escape($block['reason']) ?><?php endif; ?>
                         </p>
-                        <details>
+                        <details class="blocked_edit">
                             <summary>Edytuj blokadę</summary>
                             <form method="post" action="/admin/schedule/blocks/<?= $block['id'] ?>/update"
                                   class="schedule_form">

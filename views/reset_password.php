@@ -15,12 +15,13 @@ use Velo\Session\FlashMessages\FlashMessagesInterface;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/imgs/logo.ico">
     <title>Ustaw nowe hasło</title>
 </head>
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
 
-<main>
+<main id="main-content">
     <div class="register_main">
         <h1>Ustaw nowe hasło</h1>
         <?php if ($flashMessages->has(FlashMessagesInterface::ERROR)): ?>

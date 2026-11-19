@@ -55,20 +55,151 @@ body {
     margin: 0 auto;
     padding: 40px 20px;
 }
+/* --- Strona menu panelu administracyjnego --- */
+.admin_page_title {
+    margin: 0 0 24px;
+    color: var(--text-color);
+    font-size: clamp(28px, 4vw, 38px);
+}
+
+.menu_card {
+    padding: 28px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.menu_card h2 {
+    margin: 0 0 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.menu_current_content {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 92px;
+    margin-bottom: 22px;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+}
+
+.menu_pdf_icon,
+.menu_archive_pdf {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 58px;
+    height: 72px;
+    border-radius: 6px;
+    background: var(--danger-bg);
+    color: var(--primary-text);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(176, 42, 55, 0.18);
+}
+
+.menu_current_meta strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 17px;
+}
+
+.menu_current_meta p {
+    margin: 0 0 14px;
+    color: var(--text-light);
+}
+
+.menu_empty_message {
+    margin: 0;
+    color: var(--text-light);
+}
 
 .menu_upload_form {
     display: grid;
-    grid-template-columns: minmax(200px, 1fr);
+    grid-template-columns: minmax(220px, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: end;
     gap: 12px;
-    max-width: 500px;
-    margin-top: 20px;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    box-shadow: none;
+}
+
+.menu_upload_form label {
+    grid-column: 1;
+    grid-row: 1;
 }
 
 .menu_upload_form input[type="file"] {
-    padding: 10px;
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+    padding: 8px;
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 5px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.menu_upload_form input[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 4px;
+    background: var(--secondary-color);
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.menu_upload_form label span {
+    margin-top: 2px;
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.menu_upload_form button,
+.menu_archive_actions a,
+.download_menu_btn {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu_upload_form button {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 5px;
+    background: var(--primary-color);
+    color: var(--primary-text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.menu_upload_form button:hover {
+    background: var(--primary-hover);
+}
+
+.menu_upload_form button:active {
+    transform: translateY(1px);
 }
 
 .menu_archive {
@@ -81,19 +212,69 @@ body {
     justify-content: space-between;
     align-items: center;
     gap: 15px;
-    padding: 15px;
+    padding: 14px 16px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 8px;
+    background: var(--bg-color);
+    transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.menu_archive_item:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.menu_archive_name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.menu_archive_pdf {
+    width: 42px;
+    height: 52px;
+    border-radius: 5px;
+    font-size: 11px;
 }
 
 .menu_archive_item p {
     margin: 5px 0 0;
+    color: var(--text-light);
+    font-size: 13px;
 }
 
 .menu_archive_actions {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+.menu_main {
+    flex-grow: 1;
+    width: min(950px, 100%);
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pdf_frame_wrapper {
+    width: 100%;
+    height: 80vh;
+    min-height: 600px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.pdf_frame_wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
 }
 
 .menu_archive_actions a,
@@ -114,15 +295,74 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.schedule_admin_card {
+    padding: 28px;
+    border: 0;
+    box-shadow: 0 3px 18px rgba(44, 62, 80, 0.08);
+}
+
+.schedule_admin_card h2 {
+    margin: 0 0 8px;
+    padding: 0;
+    font-size: 21px;
+}
+
+.schedule_admin_card h2::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 9px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    vertical-align: 2px;
+}
+
+.schedule_helper {
+    margin: 0 0 18px;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
 .schedule_form {
     background-color: transparent;
     max-width: none;
-    padding: 0;
+    width: 100%;
+    margin: 0;
+    padding: 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--bg-color);
     box-shadow: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
     align-items: end;
     gap: 15px;
+}
+
+.schedule_form button {
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 5px;
+    background: var(--primary-color);
+    color: var(--primary-text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.schedule_form button:hover {
+    background: var(--primary-hover);
+}
+
+.schedule_form button:active {
+    transform: translateY(1px);
+}
+
+.download_menu_btn:hover {
+    background-color: var(--primary-hover);
 }
 
 .schedule_form input {
@@ -140,13 +380,35 @@ body {
     border-color: var(--primary-color);
 }
 
+.schedule_empty {
+    margin: 0;
+    padding: 18px;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-light);
+}
+
+.blocked_periods {
+    display: grid;
+    gap: 12px;
+}
+
 .blocked_period {
-    background-color: var(--blocked-bg);
-    color: var(--blocked-text);
-    border: 1px solid var(--blocked-border);
-    border-radius: 6px;
-    padding: 15px;
-    margin-top: 12px;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid rgba(176, 42, 55, 0.12);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(44, 62, 80, 0.05);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.blocked_period:hover {
+    box-shadow: 0 6px 16px rgba(44, 62, 80, 0.09);
+    transform: translateY(-1px);
 }
 
 .blocked_period_heading {
@@ -156,23 +418,195 @@ body {
     gap: 12px;
 }
 
-.blocked_badge {
+.blocked_period_dates {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.blocked_period_dates span {
+    color: var(--text-light);
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 600;
+}
+
+.blocked_period_dates strong {
+    font-size: 17px;
+}
+
+.blocked_badge {
+    padding: 6px 9px;
+    border-radius: 6px;
+    background: rgba(176, 42, 55, 0.08);
+    color: var(--danger-bg);
+    border: 0;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.blocked_period_details {
+    margin: 12px 0 14px;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.blocked_edit {
+    margin-bottom: 12px;
+}
+
+.blocked_edit summary {
+    width: fit-content;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.blocked_edit summary::-webkit-details-marker {
+    display: none;
+}
+
+.blocked_edit summary::before {
+    content: "+ ";
+}
+
+.blocked_edit[open] summary::before {
+    content: "- ";
+}
+
+.blocked_edit[open] {
+    margin-top: 14px;
+}
+
+.blocked_edit .schedule_form {
+    margin-top: 12px;
+    background: var(--card-bg);
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
 }
 
 .table_management_list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 12px;
     margin-top: 15px;
 }
 
-.table_management_item {
+.table_filter {
+    max-width: 260px;
+    margin-bottom: 4px;
+}
+
+.table_filter select {
+    width: 100%;
+    padding: 10px 12px;
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    padding: 15px;
-    background-color: var(--blocked-bg);
+    background: var(--input-bg);
+    color: var(--text-color);
+    font: inherit;
+    outline: none;
+}
+
+.table_filter select:focus {
+    border-color: var(--primary-color);
+}
+
+.table_management_item {
+    border: 1px solid rgba(44, 62, 80, 0.10);
+    border-radius: 12px;
+    padding: 18px;
+    background: var(--bg-color);
+    box-shadow: 0 2px 10px rgba(44, 62, 80, 0.05);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.table_management_item:hover {
+    box-shadow: 0 6px 16px rgba(44, 62, 80, 0.09);
+    transform: translateY(-1px);
+}
+
+.table_card_title {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.table_card_title span {
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.table_card_title strong {
+    font-size: 18px;
+}
+
+.table_card_details {
+    margin: 12px 0 14px;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.table_status {
+    flex: 0 0 auto;
+    padding: 6px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.table_status_active {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.table_status_inactive {
+    background: var(--blocked-bg);
+    color: var(--blocked-text);
+}
+
+.table_active_checkbox {
+    flex-direction: row !important;
+    align-items: center;
+    align-self: end;
+    min-height: 42px;
+}
+
+.table_active_checkbox input {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--primary-color);
+}
+
+.table_edit {
+    min-width: 0;
+    margin-bottom: 12px;
+}
+
+.table_edit .schedule_form {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.table_edit .schedule_form label {
+    min-width: 0;
+}
+
+.table_edit .schedule_form input {
+    min-width: 0;
+}
+
+.table_edit .table_active_checkbox {
+    grid-column: 1;
+}
+
+.table_edit .schedule_form button {
+    grid-column: 2;
+    align-self: end;
 }
 
 .inline_form {
@@ -205,6 +639,22 @@ header {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
 }
 
+.skip_link {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2000;
+    padding: 10px 14px;
+    border-radius: 5px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    transform: translateY(-160%);
+}
+
+.skip_link:focus {
+    transform: translateY(0);
+}
+
 nav {
     height: 80px;
     width: 100%;
@@ -212,6 +662,28 @@ nav {
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
+}
+
+.nav_toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.nav_toggle img {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.nav_checkbox {
+    display: none;
 }
 
 .nav_logo_link {
@@ -289,7 +761,7 @@ nav li a:hover {
     padding: 8px;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 5px 5px 0 0;
+    border-radius: 5px;
 }
 
 .account-menu-panel {
@@ -310,6 +782,10 @@ nav li a:hover {
     border: 1px solid var(--border-color);
     border-top: 0;
     border-radius: 0 0 5px 5px;
+}
+
+.account-menu-links[hidden] {
+    display: none;
 }
 
 .account-menu-links a {
@@ -538,23 +1014,24 @@ form input[type="submit"]:hover {
     align-items: center;
     padding: 40px 20px;
     width: 100%;
-    max-width: 600px;
+    max-width: 680px;
     margin: 0 auto;
 }
 
 .reservation_main h1 {
     color: var(--secondary-color);
-    margin-bottom: 30px;
+    margin-bottom: 28px;
     text-align: center;
 }
 
 .alert {
     width: 100%;
-    border-radius: 5px;
-    padding: 15px;
+    border-radius: 6px;
+    padding: 14px 16px;
     margin-bottom: 20px;
     font-weight: 600;
     text-align: center;
+    line-height: 1.45;
 }
 
 .alert-error {
@@ -569,47 +1046,50 @@ form input[type="submit"]:hover {
     border: 1px solid var(--success-border);
 }
 
-.reservation_card {
+.reservation_card,
+.reservation_section {
     background-color: var(--card-bg);
-    padding: 30px;
+    padding: 24px 28px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     width: 100%;
-    margin-bottom: 25px;
+    margin-bottom: 22px;
 }
 
 .reservation_card h2,
 .reservation_section h2 {
     color: var(--secondary-color);
     font-size: 18px;
-    margin-bottom: 15px;
+    margin: 0 0 16px 0;
     font-weight: 600;
 }
 
 .reservation_row {
-    display: flex;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
 }
 
 .reservation_row label {
-    flex: 1;
     display: flex;
     flex-direction: column;
     font-weight: 600;
     font-size: 14px;
     color: var(--text-color);
-    gap: 5px;
+    gap: 6px;
 }
 
 .reservation_card input[type="date"],
 .reservation_card input[type="number"] {
     width: 100%;
-    padding: 12px;
+    padding: 11px 12px;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 16px;
+    font-family: inherit;
     outline: none;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
     background-color: var(--input-bg);
     color: var(--text-color);
 }
@@ -617,66 +1097,96 @@ form input[type="submit"]:hover {
 .reservation_card input[type="date"]:focus,
 .reservation_card input[type="number"]:focus {
     border-color: var(--primary-color);
-}
-
-.reservation_section {
-    width: 100%;
-    margin-bottom: 25px;
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.18);
 }
 
 .reservation_status {
     font-size: 14px;
     color: var(--text-light);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    line-height: 1.45;
+}
+
+.reservation_status:empty {
+    display: none;
 }
 
 .reservation_buttons_grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
     gap: 10px;
 }
 
-.reservation_buttons_grid button {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    padding: 10px 16px;
-    border-radius: 5px;
-    cursor: pointer;
+.reservation_buttons_grid:empty::before {
+    content: "Wybierz najpierw datę i liczbę osób";
+    grid-column: 1 / -1;
     font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    color: var(--text-light);
+    font-style: italic;
 }
 
-.reservation_buttons_grid button:hover {
+.reservation_buttons_grid button {
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    text-align: center;
+    line-height: 1.3;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.reservation_buttons_grid button:hover:not(:disabled) {
     border-color: var(--primary-color);
     color: var(--primary-color);
-    background-color: rgba(230, 126, 34, 0.12);
+    background-color: rgba(230, 126, 34, 0.1);
+}
+
+.reservation_buttons_grid button:active:not(:disabled) {
+    transform: translateY(1px);
 }
 
 .reservation_buttons_grid button.active,
-.reservation_buttons_grid button.btn-primary {
+.reservation_buttons_grid button.btn-primary,
+.reservation_buttons_grid button.btn-success,
+.reservation_buttons_grid button[aria-pressed="true"] {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
     color: var(--primary-text);
 }
 
+.reservation_buttons_grid button:disabled {
+    background-color: var(--disabled-bg);
+    border-color: var(--border-color);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 #reservation-form {
     width: 100%;
+    max-width: none;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
 }
 
 #reservation-submit {
     background-color: var(--primary-color);
     color: var(--primary-text);
     border: none;
-    padding: 14px;
+    padding: 14px 20px;
     font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
+    font-weight: 700;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.25s ease;
     width: 100%;
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
 #reservation-submit:hover:not(:disabled) {
@@ -688,7 +1198,7 @@ form input[type="submit"]:hover {
     color: var(--disabled-text);
     cursor: not-allowed;
 }
-
+/* --- Motyw --- */
 .theme {
     width: 45px;
     height: 45px;
@@ -847,6 +1357,7 @@ form input[type="submit"]:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-image: url('/imgs/hero.jpg');
 }
 
 .hero_overlay {
@@ -1014,21 +1525,147 @@ form input[type="submit"]:hover {
     margin: 0 0 24px 0;
 }
 
+img,
+iframe,
+video {
+    max-width: 100%;
+}
+
+.pdf_frame_wrapper {
+    max-width: 100%;
+}
+
+table,
+.schedule_card,
+.reservation_card,
+.reservation_section {
+    max-width: 100%;
+}
+
 /* --- Responsywność --- */
 @media (max-width: 768px) {
+    .admin_menu_main,
+    .admin_schedule_main {
+        padding: 30px 16px;
+    }
+
+    .menu_card,
+    .schedule_admin_card {
+        padding: 20px;
+    }
+
+    .schedule_form,
+    .blocked_edit .schedule_form,
+    .table_edit .schedule_form {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+    }
+
+    .menu_upload_form {
+        grid-template-columns: 1fr;
+    }
+
+    .menu_upload_form label,
+    .menu_upload_form input[type="file"],
+    .menu_upload_form button {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .menu_upload_form button {
+        width: 100%;
+    }
+
+    .menu_archive_item {
+        align-items: flex-start;
+    }
+
+    .pdf_frame_wrapper {
+        height: 70vh;
+        min-height: 420px;
+    }
+
+    .hero_banner,
+    .hero_overlay {
+        min-height: 380px;
+    }
+
+    .hero_overlay {
+        padding: 40px 16px;
+    }
+
     nav {
-        height: auto;
-        padding: 15px 20px;
-        flex-direction: column;
-        gap: 15px;
+        position: relative;
+        height: 70px;
+        padding: 10px 16px;
+    }
+
+    .nav_toggle {
+        display: block;
     }
 
     .nav_links {
+        display: none;
+        position: absolute;
+        top: 58px;
+        right: 16px;
+        z-index: 1000;
+        width: min(320px, calc(100vw - 32px));
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
         flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background: var(--card-bg);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+    }
+
+    #nav-toggle:checked ~ .nav_links {
+        display: flex;
+    }
+
+    .nav_links li,
+    .nav_links li a {
         width: 100%;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
+    }
+
+    .nav_links li a {
+        justify-content: flex-start;
+        color: var(--text-color);
+        border-radius: 6px;
+    }
+
+    .nav_links li a:hover {
+        color: var(--primary-color);
+        background: rgba(230, 126, 34, 0.10);
+    }
+
+    .theme-button {
+        width: 44px !important;
+        margin: 2px 6px;
+        padding: 8px;
+    }
+
+    .account-menu {
+        width: 100%;
+    }
+
+    .account-menu summary {
+        width: 44px;
+    }
+
+    .account-menu-panel {
+        position: static;
+        width: 100%;
+        min-width: 0;
+        margin: 4px 0 0;
+    }
+
+    .account-menu-links,
+    .account-menu form {
+        min-width: 0;
     }
     .split_section {
         grid-template-columns: 1fr;
@@ -1047,6 +1684,83 @@ form input[type="submit"]:hover {
 }
 
 @media (max-width: 480px) {
+    .admin_menu_main,
+    .admin_schedule_main {
+        padding: 24px 12px;
+    }
+
+    .admin_page_title {
+        font-size: 28px;
+    }
+
+    .menu_card,
+    .schedule_admin_card {
+        padding: 16px;
+    }
+
+    .schedule_form,
+    .blocked_edit .schedule_form,
+    .table_edit .schedule_form {
+        grid-template-columns: 1fr;
+        padding: 14px;
+    }
+
+    .schedule_form button {
+        width: 100%;
+    }
+
+    .table_edit .table_active_checkbox,
+    .table_edit .schedule_form button {
+        grid-column: 1;
+    }
+
+    .blocked_period_heading {
+        align-items: flex-start;
+    }
+
+    .table_filter {
+        max-width: none;
+        width: 100%;
+    }
+
+    .table_management_list {
+        grid-template-columns: 1fr;
+    }
+
+    .pdf_frame_wrapper {
+        height: 65vh;
+        min-height: 360px;
+    }
+
+    .hero_banner,
+    .hero_overlay {
+        min-height: 320px;
+    }
+
+    .hero_overlay h1 {
+        font-size: 36px;
+    }
+
+    .hero_keywords {
+        line-height: 1.6;
+        letter-spacing: 1px;
+    }
+
+    .menu_current_content,
+    .menu_archive_item {
+        flex-direction: column;
+    }
+
+    .menu_archive_actions {
+        width: 100%;
+    }
+
+    .menu_archive_actions a,
+    .menu_archive_actions .danger_button {
+        flex: 1;
+        width: 100%;
+    }
+
     nav {
         padding: 15px 10px;
     }

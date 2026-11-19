@@ -18,7 +18,7 @@ declare(strict_types=1);
 <body>
 <?php require __DIR__ . '/templates/header.php'; ?>
 
-<main class="contact_main">
+<main class="contact_main" id="main-content">
     <h1>Kontakt</h1>
 
     <div class="contact_grid">

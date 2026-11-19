@@ -66,11 +66,11 @@
                 if (table.is_available) {
                     button.addEventListener('click', () => {
                         tablesContainer.querySelectorAll('button').forEach((item) => {
-                            item.classList.remove('btn-success');
-                            item.classList.add('btn-outline-success');
+                            item.classList.remove('active');
+                            item.setAttribute('aria-pressed', 'false');
                         });
-                        button.classList.remove('btn-outline-success');
-                        button.classList.add('btn-success');
+                        button.classList.add('active');
+                        button.setAttribute('aria-pressed', 'true');
                         selectedTable.value = String(table.table_id);
                         submitButton.disabled = false;
                     });
