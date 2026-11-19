@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\ReservationService;
+use App\Services\AuthService;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
+use PDOException;
 use Throwable;
 use Velo\Http\Request;
 use Velo\Http\Responses\Concrete\JsonResponse;
@@ -82,9 +84,13 @@ final readonly class ReservationController
     public function store(Request $request): Response
     {
         try {
-            $accountId = $this->session->has('account_id')
-                ? $this->sessionAccountId($this->session->get('account_id'))
-                : ReservationService::DEV_ACCOUNT_ID;
+            if (!$this->session->has(AuthService::USER_ID_SESSION_KEY)) {
+                throw new InvalidArgumentException('Zaloguj się, aby zarezerwować stolik.');
+            }
+
+            $accountId = $this->sessionAccountId(
+                $this->session->get(AuthService::USER_ID_SESSION_KEY)
+            );
 
             $this->reservationService->createReservation(
                 $accountId,
@@ -95,6 +101,8 @@ final readonly class ReservationController
             );
 
             $this->flashMessages->success('Rezerwacja została zapisana. Do zobaczenia!');
+        } catch (PDOException) {
+            $this->flashMessages->error('Nie udało się zapisać rezerwacji. Spróbuj ponownie.');
         } catch (InvalidArgumentException $exception) {
             $this->flashMessages->error($exception->getMessage());
         }

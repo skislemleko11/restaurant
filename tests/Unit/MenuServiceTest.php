@@ -4,8 +4,11 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use App\Services\MenuService;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(MenuService::class)]
 final class MenuServiceTest extends TestCase
 {
     private string $publicDirectory;

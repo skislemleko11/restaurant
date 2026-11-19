@@ -1,22 +1,22 @@
 <?php
 declare(strict_types=1);
 
-use App\Controllers\Auth\ActionAuthController;
-use App\Controllers\Auth\ShowAuthController;
-use App\Controllers\HomeController;
-use App\Controllers\ReservationController;
+use App\Controllers\AdminMenuController;
 use App\Controllers\AdminScheduleController;
 use App\Controllers\AdminTableController;
-use App\Controllers\AdminMenuController;
-use App\Middlewares\AdminMiddleware;
+use App\Controllers\Auth\ActionAuthController;
+use App\Controllers\Auth\ShowAuthController;
+use App\Controllers\ContactController;
+use App\Controllers\HomeController;
+use App\Controllers\MenuController;
 use App\Controllers\Registration\RegisterController;
 use App\Controllers\Registration\ShowRegistrationController;
 use App\Controllers\Registration\VerifyEmailController;
+use App\Controllers\ReservationController;
+use App\Middlewares\AdminMiddleware;
 use Velo\Middlewares\AntiCsrf\AntiCsrfMiddleware;
 use Velo\Middlewares\AuthMiddleware\WebAuthMiddleware;
 use Velo\Router\Router\Router;
-use App\Controllers\MenuController;
-use App\Controllers\ContactController;
 
 /**
  * @var Router $router

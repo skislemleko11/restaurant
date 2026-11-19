@@ -19,8 +19,6 @@ final readonly class ReservationService
     public const int MINIMUM_ADVANCE_MINUTES = 60;
     public const int MAX_DAYS_AHEAD = 30;
     public const int MAX_PARTY_SIZE = 12;
-    public const int DEV_ACCOUNT_ID = 1;
-
     public function __construct(private ReservationRepositoryInterface $reservationRepository)
     {
     }
