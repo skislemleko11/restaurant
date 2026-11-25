@@ -105,6 +105,69 @@ final readonly class ReservationService
     }
 
     /**
+     * @return list<array{reservation_id: int, date_of_reservation: string, number_of_people: int, table_name: string, location: string}>
+     */
+    public function getReservationsForAccount(int $accountId): array
+    {
+        return array_map(
+            static fn(array $reservation): array => [
+                'reservation_id' => (int)$reservation['reservation_id'],
+                'date_of_reservation' => (string)$reservation['date_of_reservation'],
+                'number_of_people' => (int)$reservation['number_of_people'],
+                'table_name' => (string)$reservation['table_name'],
+                'location' => (string)$reservation['location'],
+            ],
+            $this->reservationRepository->findReservationsByAccount($accountId)
+        );
+    }
+
+    public function cancelReservation(int $reservationId, int $accountId): void
+    {
+        $found = false;
+        foreach ($this->reservationRepository->findReservationsByAccount($accountId) as $reservation) {
+            if ((int)$reservation['reservation_id'] !== $reservationId) {
+                continue;
+            }
+
+            $found = true;
+            $reservationDate = new DateTimeImmutable(
+                (string)$reservation['date_of_reservation'],
+                $this->timezone()
+            );
+            if ($reservationDate < new DateTimeImmutable('now', $this->timezone())) {
+                throw new InvalidArgumentException('Nie można anulować rezerwacji z przeszłości.');
+            }
+            break;
+        }
+
+        if (!$found) {
+            throw new InvalidArgumentException('Rezerwacja nie należy do Twojego konta.');
+        }
+
+        if (!$this->reservationRepository->deleteReservation($reservationId, $accountId)) {
+            throw new InvalidArgumentException('Nie udało się anulować rezerwacji. Mogła zostać już anulowana lub nie należy do Twojego konta.');
+        }
+    }
+
+    /**
+     * @return list<array{reservation_id: int, date_of_reservation: string, number_of_people: int, table_name: string, location: string, email: string}>
+     */
+    public function getAllReservations(): array
+    {
+        return array_map(
+            static fn(array $reservation): array => [
+                'reservation_id' => (int)$reservation['reservation_id'],
+                'date_of_reservation' => (string)$reservation['date_of_reservation'],
+                'number_of_people' => (int)$reservation['number_of_people'],
+                'table_name' => (string)$reservation['table_name'],
+                'location' => (string)$reservation['location'],
+                'email' => (string)$reservation['email'],
+            ],
+            $this->reservationRepository->findAllReservations()
+        );
+    }
+
+    /**
      * @throws DateMalformedStringException
      * @throws Throwable
      */

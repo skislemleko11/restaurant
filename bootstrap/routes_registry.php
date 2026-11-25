@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Controllers\AdminMenuController;
 use App\Controllers\AdminScheduleController;
 use App\Controllers\AdminTableController;
+use App\Controllers\AdminReservationController;
 use App\Controllers\Auth\ActionAuthController;
 use App\Controllers\Auth\ShowAuthController;
 use App\Controllers\ContactController;
@@ -32,6 +33,14 @@ $router->get('/reservation/slots', ReservationController::class, 'slots');
 $router->get('/reservation/tables', ReservationController::class, 'tables');
 $router->post('/reservation', ReservationController::class, 'store')
     ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/my-reservations', ReservationController::class, 'myReservations')
+    ->addMiddleware(WebAuthMiddleware::class);
+$router->post('/my-reservations/{id}/cancel', ReservationController::class, 'cancel')
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AntiCsrfMiddleware::class);
+$router->get('/admin/reservations', AdminReservationController::class)
+    ->addMiddleware(WebAuthMiddleware::class)
+    ->addMiddleware(AdminMiddleware::class);
 $router->get('/admin/schedule', AdminScheduleController::class)
     ->addMiddleware(WebAuthMiddleware::class)
     ->addMiddleware(AdminMiddleware::class);

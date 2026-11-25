@@ -23,4 +23,6 @@ interface UserRepositoryInterface
     public function updatePassword(int $accountId, string $passwordHash): void;
 
     public function isAdmin(int $accountId): bool;
+
+    public function findEmailByAccountId(int $accountId): ?string;
 }

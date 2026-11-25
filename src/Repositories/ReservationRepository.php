@@ -167,6 +167,50 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         ]);
     }
 
+    public function findAllReservations(): array
+    {
+        $statement = $this->connection->query(
+            'SELECT r.reservation_id, r.date_of_reservation, r.number_of_people,
+                    t.name AS table_name, t.location, u.email
+             FROM reservation r
+             JOIN tables_info t ON t.table_id = r.table_id
+             JOIN users u ON u.account_id = r.account_id
+             ORDER BY r.date_of_reservation DESC'
+        );
+
+        return $statement->fetchAll();
+    }
+
+    public function findReservationsByAccount(int $accountId): array
+    {
+        $statement = $this->connection->prepare(
+            'SELECT r.reservation_id, r.date_of_reservation, r.number_of_people,
+                    t.name AS table_name, t.location
+             FROM reservation r
+             JOIN tables_info t ON t.table_id = r.table_id
+             WHERE r.account_id = :account_id
+             ORDER BY r.date_of_reservation DESC'
+        );
+        $statement->execute(['account_id' => $accountId]);
+
+        return $statement->fetchAll();
+    }
+
+    public function deleteReservation(int $reservationId, int $accountId): bool
+    {
+        $statement = $this->connection->prepare(
+            'DELETE FROM reservation
+             WHERE reservation_id = :reservation_id
+               AND account_id = :account_id'
+        );
+        $statement->execute([
+            'reservation_id' => $reservationId,
+            'account_id' => $accountId,
+        ]);
+
+        return $statement->rowCount() === 1;
+    }
+
     public function findBlockedPeriods(string $from, string $to): array
     {
         $statement = $this->connection->prepare(

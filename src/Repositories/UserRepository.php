@@ -103,4 +103,15 @@ final readonly class UserRepository implements UserRepositoryInterface
 
         return $statement->fetchColumn() !== false;
     }
+
+    public function findEmailByAccountId(int $accountId): ?string
+    {
+        $statement = $this->connection->prepare(
+            'SELECT email FROM users WHERE account_id = :account_id LIMIT 1'
+        );
+        $statement->execute(['account_id' => $accountId]);
+        $email = $statement->fetchColumn();
+
+        return $email === false ? null : (string)$email;
+    }
 }

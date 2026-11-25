@@ -31,6 +31,18 @@ interface ReservationRepositoryInterface
     public function create(int $accountId, int $tableId, DateTimeImmutable $slot, int $numberOfPeople): void;
 
     /**
+     * @return list<array{reservation_id: int|string, date_of_reservation: string, number_of_people: int|string, table_name: string, location: string, email: string}>
+     */
+    public function findAllReservations(): array;
+
+    /**
+     * @return list<array{reservation_id: int|string, date_of_reservation: string, number_of_people: int|string, table_name: string, location: string}>
+     */
+    public function findReservationsByAccount(int $accountId): array;
+
+    public function deleteReservation(int $reservationId, int $accountId): bool;
+
+    /**
      * @return list<array{id: int|string, start: string, end: string, reason: string|null}>
      */
     public function findBlockedPeriods(string $from, string $to): array;

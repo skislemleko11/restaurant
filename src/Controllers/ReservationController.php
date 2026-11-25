@@ -5,12 +5,15 @@ namespace App\Controllers;
 
 use App\Services\ReservationService;
 use App\Services\AuthService;
+use App\Services\ReservationMailer;
+use App\Repositories\UserRepositoryInterface;
 use DateMalformedStringException;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
 use PDOException;
 use Throwable;
+use PHPMailer\PHPMailer\Exception as MailException;
 use Velo\Http\Request;
 use Velo\Http\Responses\Concrete\JsonResponse;
 use Velo\Http\Responses\Concrete\RedirectResponse;
@@ -26,7 +29,9 @@ final readonly class ReservationController
         private ReservationService            $reservationService,
         private AntiCsrfTokenManagerInterface $tokenManager,
         private FlashMessagesInterface        $flashMessages,
-        private SessionInterface              $session
+        private SessionInterface              $session,
+        private UserRepositoryInterface       $userRepository,
+        private ReservationMailer             $reservationMailer
     )
     {
     }
@@ -78,6 +83,45 @@ final readonly class ReservationController
         }
     }
 
+    public function myReservations(): ViewResponse
+    {
+        if (!$this->session->has(AuthService::USER_ID_SESSION_KEY)) {
+            return new ViewResponse('errors/error_general.php', []);
+        }
+
+        $accountId = $this->sessionAccountId(
+            $this->session->get(AuthService::USER_ID_SESSION_KEY)
+        );
+
+        return new ViewResponse('my_reservations.php', [
+            'reservations' => $this->reservationService->getReservationsForAccount($accountId),
+            'token' => $this->tokenManager->getToken(),
+            'errors' => $this->flashMessages->get(FlashMessagesInterface::ERROR),
+            'successMessages' => $this->flashMessages->get(FlashMessagesInterface::SUCCESS),
+        ]);
+    }
+
+    public function cancel(Request $request, int $id): Response
+    {
+        try {
+            if (!$this->session->has(AuthService::USER_ID_SESSION_KEY)) {
+                throw new InvalidArgumentException('Zaloguj się, aby anulować rezerwację.');
+            }
+
+            $accountId = $this->sessionAccountId(
+                $this->session->get(AuthService::USER_ID_SESSION_KEY)
+            );
+            $this->reservationService->cancelReservation($id, $accountId);
+            $this->flashMessages->success('Rezerwacja została anulowana.');
+        } catch (InvalidArgumentException $exception) {
+            $this->flashMessages->error($exception->getMessage());
+        } catch (Throwable) {
+            $this->flashMessages->error('Nie udało się anulować rezerwacji.');
+        }
+
+        return new RedirectResponse('/my-reservations', 303);
+    }
+
     /**
      * @throws Throwable
      */
@@ -101,6 +145,22 @@ final readonly class ReservationController
             );
 
             $this->flashMessages->success('Rezerwacja została zapisana. Do zobaczenia!');
+            $email = $this->userRepository->findEmailByAccountId($accountId);
+            if ($email !== null) {
+                $tableId = filter_var($request->getFormValue('table_id'), FILTER_VALIDATE_INT);
+                $people = filter_var($request->getFormValue('people'), FILTER_VALIDATE_INT);
+                try {
+                    $this->reservationMailer->send(
+                        $email,
+                        (string)$request->getFormValue('date'),
+                        (string)$request->getFormValue('time'),
+                        'Stolik #' . ($tableId !== false ? $tableId : ''),
+                        $people !== false ? $people : 1
+                    );
+                } catch (MailException) {
+                    $this->flashMessages->error('Rezerwacja została zapisana, ale nie udało się wysłać potwierdzenia mailowego.');
+                }
+            }
         } catch (PDOException) {
             $this->flashMessages->error('Nie udało się zapisać rezerwacji. Spróbuj ponownie.');
         } catch (InvalidArgumentException $exception) {

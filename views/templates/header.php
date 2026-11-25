@@ -36,7 +36,9 @@ use Velo\Session\Session\SessionInterface;
                                     <a href="/admin/menu">Zarządzanie menu</a>
                                     <a href="/admin/schedule">Kalendarz dostępności</a>
                                     <a href="/admin/tables">Zarządzanie stolikami</a>
+                                    <a href="/admin/reservations">Wszystkie rezerwacje</a>
                                 </div>
+                                <a href="/my-reservations" class="account-my-reservations">Moje rezerwacje</a>
                             </div>
                         </details>
                     </li>
