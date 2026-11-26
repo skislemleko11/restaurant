@@ -1,0 +1,137 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Router\Tests;
+
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Velo\Http\RequestMethod;
+use Velo\Router\Route;
+
+final class RouteTest extends TestCase
+{
+    private Route $route;
+
+    protected function setUp(): void
+    {
+        $this->route = new Route(
+            RequestMethod::GET,
+            '/',
+            'controller',
+            'action'
+        );
+    }
+
+    #[Test]
+    public function it_sets_middleware_and_returns_self(): void
+    {
+        $self = $this->route->addMiddleware('middleware');
+
+        self::assertSame(['middleware'], $this->route->getMiddlewares());
+        self::assertSame($this->route, $self);
+    }
+
+    #[Test]
+    public function it_keeps_a_custom_compiled_regex_passed_to_constructor(): void
+    {
+        $route = new Route(
+            RequestMethod::GET,
+            '/users/{id}',
+            'controller',
+            'action',
+            '#^/custom/(?P<id>\d+)$#'
+        );
+
+        self::assertSame('#^/custom/(?P<id>\d+)$#', $route->compiledRegex);
+    }
+
+    #[Test]
+    public function it_sets_middleware_with_params_and_returns_self(): void
+    {
+        $self = $this->route->addMiddleware(['middleware', ['param1', 'param2']]);
+
+        self::assertSame([['middleware', ['param1', 'param2']]], $this->route->getMiddlewares());
+        self::assertSame($this->route, $self);
+    }
+
+    #[Test]
+    public function it_sets_multiple_middlewares_and_returns_self(): void
+    {
+        $self = $this->route->addMiddlewares(['middleware1', ['param1', 'param2']], ['middleware2', ['param3']]);
+
+        self::assertSame(
+            [['middleware1', ['param1', 'param2']], ['middleware2', ['param3']]],
+            $this->route->getMiddlewares()
+        );
+        self::assertSame($this->route, $self);
+    }
+
+    #[Test]
+    public function it_gets_middleware_and_returns_null(): void
+    {
+        self::assertNull($this->route->getMiddleware(1));
+    }
+
+    #[Test]
+    public function it_gets_middleware_and_returns_value(): void
+    {
+        $this->route->addMiddleware('middleware');
+
+        self::assertSame('middleware', $this->route->getMiddleware(0));
+    }
+
+    /**
+     * @param list<string> $middlewares
+     */
+    #[Test]
+    #[DataProvider('middlewaresCountDataProvider')]
+    public function it_gets_middleware_count(array $middlewares): void
+    {
+        foreach ($middlewares as $middleware) {
+            $this->route->addMiddleware($middleware);
+        }
+
+        self::assertSame(count($middlewares), $this->route->getMiddlewaresCount());
+    }
+
+    /**
+     * @return array<string, array{0: list<string>}>
+     */
+    public static function middlewaresCountDataProvider(): array
+    {
+        return [
+            '1_middleware' => [['middleware']],
+            '2_middlewares' => [['middleware', 'aaa']],
+            '3_middlewares' => [['middleware', 'as', 'af']],
+            '4_middlewares' => [['middleware', 'aqqqe', 's', 'r']],
+        ];
+    }
+
+    #[Test]
+    public function it_exports_and_restores_state_using_set_state(): void
+    {
+        $route = new Route(
+            RequestMethod::POST,
+            '/articles/{slug}',
+            'ArticleController',
+            'show',
+            '#^/articles/(?P<slug>[a-z0-9-]+)$#'
+        );
+
+        $route->addMiddlewares('auth', ['rate-limit', ['60']]);
+
+        /** @var Route $restoredRoute */
+        $restoredRoute = eval('return ' . var_export($route, true) . ';');
+
+        self::assertInstanceOf(Route::class, $restoredRoute);
+        self::assertSame(RequestMethod::POST, $restoredRoute->requestMethod);
+        self::assertSame('/articles/{slug}', $restoredRoute->path);
+        self::assertSame('ArticleController', $restoredRoute->controller);
+        self::assertSame('show', $restoredRoute->action);
+        self::assertSame('#^/articles/(?P<slug>[a-z0-9-]+)$#', $restoredRoute->compiledRegex);
+        self::assertSame('auth', $restoredRoute->getMiddleware(0));
+        self::assertSame(['rate-limit', ['60']], $restoredRoute->getMiddleware(1));
+        self::assertSame(2, $restoredRoute->getMiddlewaresCount());
+    }
+}

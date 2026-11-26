@@ -1,0 +1,143 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Tests\Middlewares\GuestMiddleware;
+
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Velo\Http\Request;
+use Velo\Http\RequestMethod;
+use Velo\Http\Responses\Concrete\JsonResponse;
+use Velo\Http\Responses\Concrete\TextResponse;
+use Velo\Middlewares\GuestMiddleware\ApiGuestConfig;
+use Velo\Middlewares\GuestMiddleware\ApiGuestMiddleware;
+use Velo\Session\Session\Session;
+use Velo\Session\Session\SessionInterface;
+
+class ApiGuestMiddlewareTest extends TestCase
+{
+    private SessionInterface $session;
+    private ApiGuestConfig $config;
+
+    protected function setUp(): void
+    {
+        $_SESSION = [];
+        $this->session = new Session();
+        $this->config = new ApiGuestConfig(
+            sessionKeyName: 'key',
+            responseForAuthenticatedUser: [
+                'hehe' => 'hehe'
+            ]
+        );
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = [];
+    }
+
+    #[Test]
+    public function it_calls_next_when_user_is_unauthenticated(): void
+    {
+        $request = new Request(url: '/dashboard', method: RequestMethod::GET);
+        $expectedResponse = new TextResponse('hehe');
+        $middleware = new ApiGuestMiddleware(session: $this->session);
+
+        $nextCalled = false;
+        $next = function (Request $req) use (&$nextCalled, $expectedResponse) {
+            $nextCalled = true;
+            return $expectedResponse;
+        };
+
+        $response = $middleware->handle($request, $next, $this->config);
+
+        self::assertTrue($nextCalled);
+        self::assertSame($expectedResponse, $response);
+    }
+
+    #[Test]
+    public function it_returns_authenticated_response_when_user_is_authenticated(): void
+    {
+        $_SESSION['user_id'] = 123;
+
+        $request = new Request(url: '/protected-page', method: RequestMethod::GET);
+        $middleware = new ApiGuestMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next);
+
+        self::assertSame(403, $response->statusCode);
+        self::assertNull($response->getHeader('Location'));
+    }
+
+    #[Test]
+    public function it_returns_custom_authenticated_response_when_provided(): void
+    {
+        $_SESSION[$this->config->sessionKeyName] = 123;
+
+        $request = new Request(url: '/admin/settings', method: RequestMethod::GET);
+        $middleware = new ApiGuestMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $this->config);
+
+        self::assertSame(403, $response->statusCode);
+        self::assertNull($response->getHeader('Location'));
+        self::assertSame($this->config->responseForAuthenticatedUser, $response->body ?? null);
+    }
+
+    #[Test]
+    public function it_uses_custom_response_handler_when_provided(): void
+    {
+        $request = new Request(url: '/secret', method: RequestMethod::GET);
+        $customResponse = new TextResponse('', statusCode: 401);
+        $customHandler = function (Request $req) use ($request, $customResponse) {
+            self::assertSame($request, $req);
+            return $customResponse;
+        };
+
+        $config = new ApiGuestConfig(
+            responseForAuthenticatedUser: ['hehe' => 'hehe'],
+            customResponseHandler: $customHandler
+        );
+
+        $_SESSION[$config->sessionKeyName] = 123;
+
+        $middleware = new ApiGuestMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $config);
+
+        self::assertSame($customResponse, $response);
+    }
+
+    #[Test]
+    public function it_uses_custom_response_handler_with_custom_response_when_provided(): void
+    {
+        $request = new Request(url: '/secret', method: RequestMethod::GET);
+        $customResponse = new JsonResponse(body: ['hehe' => 'hihi'], statusCode: 401);
+
+        $customHandler = function (Request $req, $data) use ($request) {
+            self::assertSame($request, $req);
+            return new JsonResponse(body: $data, statusCode: 401);
+        };
+
+        $config = new ApiGuestConfig(
+            responseForAuthenticatedUser: ['hehe' => 'hihi'],
+            customResponseHandler: $customHandler
+        );
+
+        $_SESSION[$config->sessionKeyName] = 123;
+
+        $middleware = new ApiGuestMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $config);
+
+        self::assertEquals($customResponse, $response);
+    }
+}

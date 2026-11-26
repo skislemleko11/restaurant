@@ -1,0 +1,153 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Database\Tests;
+
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Velo\Database\Database;
+use Velo\Database\PdoFactory;
+use PDO;
+
+final class DatabaseTest extends TestCase
+{
+    protected Database $db;
+    protected PDO $pdo;
+
+    protected function setUp(): void
+    {
+        $this->pdo = PdoFactory::create(
+            sql: 'sqlite',
+            dbname: ':memory:'
+        );
+        $this->db = new Database($this->pdo);
+
+        $this->pdo->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL
+            )
+        ');
+
+        $this->pdo->exec("INSERT INTO users (name, email) VALUES ('Jan Kowalski', 'jan@wp.pl')");
+        $this->pdo->exec("INSERT INTO users (name, email) VALUES ('Anna Nowak', 'anna@o2.pl')");
+    }
+
+    #[Test]
+    public function it_returns_the_same_pdo(): void
+    {
+        self::assertSame($this->pdo, $this->db->getPDO());
+    }
+
+    #[Test]
+    public function it_fetches_and_returnes_single_row(): void
+    {
+        $result = $this->db->fetchOne(
+            'SELECT * FROM users WHERE email = :email',
+            ['email' => 'jan@wp.pl']
+        );
+
+        self::assertIsArray($result);
+        self::assertSame('Jan Kowalski', $result['name']);
+        self::assertEquals(1, $result['id']);
+    }
+
+    #[Test]
+    public function it_fetches_and_returns_empty_array_when_no_results(): void
+    {
+        $result = $this->db->fetchOne(
+            'SELECT * FROM users WHERE email = :email',
+            ['email' => 'nieistnieje@test.pl']
+        );
+
+        self::assertSame([], $result);
+    }
+
+    #[Test]
+    public function it_fetches_and_returns_multiple_rows(): void
+    {
+        $result = $this->db->fetchAll('SELECT name FROM users ORDER BY id');
+
+        self::assertCount(2, $result);
+        self::assertSame('Jan Kowalski', $result[0]['name']);
+        self::assertSame('Anna Nowak', $result[1]['name']);
+    }
+
+    #[Test]
+    public function it_fetches_lazy(): void
+    {
+        $result = $this->db->fetchAllLazy('SELECT name FROM users ORDER BY id');
+
+        $resArr = [];
+
+        foreach ($result as $row) {
+            $resArr[] = $row;
+        }
+
+        self::assertCount(2, $resArr);
+        self::assertSame('Jan Kowalski', $resArr[0]['name']);
+        self::assertSame('Anna Nowak', $resArr[1]['name']);
+    }
+
+    #[Test]
+    public function it_executes_queries_and_returns_row_count(): void
+    {
+        $rowCount = $this->db->execute(
+            'INSERT INTO users (name, email) VALUES (:name, :email)',
+            ['name' => 'Tomasz Bat', 'email' => 'tomasz@test.pl'],
+            returnRowCount: true
+        );
+
+        self::assertSame(1, $rowCount);
+
+        $user = $this->db->fetchOne("SELECT * FROM users WHERE email = 'tomasz@test.pl'");
+        self::assertSame('Tomasz Bat', $user['name']);
+    }
+
+    #[Test]
+    public function it_rolls_back_changes_on_error(): void
+    {
+        $this->db->beginTransaction();
+
+        $this->db->execute(
+            'INSERT INTO users (name, email) VALUES (:name, :email)',
+            ['name' => 'Błąd Transakcji', 'email' => 'error@test.pl']
+        );
+
+        $this->db->rollback();
+
+        $user = $this->db->fetchOne("SELECT * FROM users WHERE email = 'error@test.pl'");
+        self::assertSame([], $user);
+    }
+
+    #[Test]
+    public function it_commits_changes_on_success(): void
+    {
+        $this->db->beginTransaction();
+
+        $this->db->execute(
+            'INSERT INTO users (name, email) VALUES (:name, :email)',
+            ['name' => 'Sukces Transakcji', 'email' => 'success@test.pl']
+        );
+
+        $this->db->commit();
+
+        $user = $this->db->fetchOne("SELECT * FROM users WHERE email = 'success@test.pl'");
+        self::assertSame('Sukces Transakcji', $user['name']);
+    }
+
+    #[Test]
+    public function it_gets_last_insert_id(): void
+    {
+        $this->db->execute(
+            'INSERT INTO users (name, email) VALUES (:name, :email)',
+            ['name' => 'Test User', 'email' => 'test@test.pl']
+        );
+
+        $lastInsertId = $this->db->getLastInsertId();
+
+        self::assertIsInt($lastInsertId);
+        self::assertGreaterThan(0, $lastInsertId);
+    }
+}

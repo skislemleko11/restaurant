@@ -1,0 +1,94 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Middlewares\AntiCsrf;
+
+use Random\RandomException;
+use Velo\FileSystem\PathResolver\Exceptions\PathNotFoundException;
+use Velo\FileSystem\PathResolver\PathResolver;
+use Velo\Http\Request;
+use Velo\Http\ResponseFormat;
+use Velo\Http\Responses\Concrete\JsonResponse;
+use Velo\Http\Responses\Concrete\ViewResponse;
+use Velo\Http\Responses\Response;
+use Velo\Router\Middlewares\MiddlewareInterface;
+
+/**
+ * Protects against CSRF attacks.
+ *
+ * Anti CSRF protection is based on sessions and tokens.
+ * Anti CSRF token is stored in $_SESSION['csrf_token'].
+ * The token in the POST form should be called 'csrf_token'.
+ */
+final readonly class AntiCsrfMiddleware implements MiddlewareInterface
+{
+    public const string CSRF_SESSION_TOKEN_NAME = 'csrf_token';
+
+    public function __construct(
+        private PathResolver     $pathResolver,
+        private AntiCsrfTokenManagerInterface $tokenManager
+    )
+    {
+    }
+
+    /**
+     * Handles the given Request.
+     *
+     * If the CSRF token is invalid, it will be regenerated and the result of getInvalidTokenResponse(request) will be returned.
+     * If the CSRF token is valid, the request will be passed to the next middleware.
+     *
+     * @throws PathNotFoundException
+     * @throws RandomException
+     */
+    public function handle(
+        Request        $request,
+        callable       $next,
+        AntiCsrfConfig $config = new AntiCsrfConfig()
+    ): Response
+    {
+        $requestToken = $request->getJsonInputOrFormValue($config->tokenName);
+
+        if (!$this->tokenManager->isValid($requestToken)) {
+            $this->tokenManager->regenerateToken();
+            return $this->getInvalidTokenResponse($request, $config);
+        }
+
+        return $next($request);
+    }
+
+    /**
+     * Returns the Response for an invalid CSRF token.
+     *
+     * Uses custom handler if provided,
+     * otherwise returns the ViewResponse with viewPath: error403, statusCode: 403 and data: ['error' => 'Invalid anti CSRF token!']
+     * or JsonResponse if the view file is not registered.
+     *
+     * @throws PathNotFoundException
+     */
+    private function getInvalidTokenResponse(Request $request, AntiCsrfConfig $config): Response
+    {
+        if ($config->customResponseHandler) {
+            return ($config->customResponseHandler)($request);
+        }
+
+        $responseDataOrBody = ['error' => 'Invalid anti CSRF token!'];
+
+        $format = ResponseFormat::fromGivenAcceptHeader($request->getHeader('Accept', ResponseFormat::JSON->value));
+
+        if ($format === ResponseFormat::HTML) {
+            $viewFile = $this->pathResolver->resolveErrorFilePath(403);
+
+            if ($viewFile === false) {
+                return new JsonResponse($responseDataOrBody, 403);
+            }
+
+            return new ViewResponse(
+                $viewFile,
+                $responseDataOrBody,
+                403
+            );
+        }
+
+        return new JsonResponse($responseDataOrBody, 403);
+    }
+}

@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\FileSystem\PathResolver\Exceptions;
+
+use Exception;
+use Velo\FileSystem\Exceptions\FileSystemExceptionInterface;
+
+/**
+ * This Exception should be thrown when a Path in PathResolver was not found.
+ */
+final class PathNotFoundException extends Exception implements FileSystemExceptionInterface
+{
+    protected $message = 'The requested path not found!';
+}

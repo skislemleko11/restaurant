@@ -1,0 +1,43 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Http\Responses\Concrete;
+
+use Velo\Http\RenderContext;
+use Velo\Http\ResponseFormat;
+use Velo\Http\Responses\Response;
+use Velo\View\ViewResolver\Exceptions\InvalidViewExtensionException;
+use Velo\View\ViewResolver\Exceptions\ViewNotFoundException;
+
+/**
+ * Represents an HTTP response containing the content of the provided view file.
+ */
+final class ViewResponse extends Response
+{
+    /**
+     * @param string $relativeToViewsDirFilePath Must be a relative path to 'views' directory from PathResolver.
+     * @param array<string, mixed> $data Will be extracted to variables and passed to the view.
+     * Key - variable name, value - variable value.
+     * @param array<string, string> $headers
+     */
+    public function __construct(
+        private readonly string $relativeToViewsDirFilePath,
+        private readonly array  $data = [],
+        int                     $statusCode = 200,
+        array                   $headers = []
+    )
+    {
+        parent::__construct($statusCode, $headers);
+
+        $this->setHeader(self::CONTENT_TYPE_HEADER, ResponseFormat::HTML->value . '; charset=utf-8');
+    }
+
+    /**
+     * @throws ViewNotFoundException
+     * @throws InvalidViewExtensionException
+     */
+    public function render(RenderContext $context): string
+    {
+        return $context->viewRenderer->render($this->relativeToViewsDirFilePath, $this->data);
+    }
+}

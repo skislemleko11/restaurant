@@ -1,0 +1,49 @@
+{
+  "name": "skislemleko11/velo",
+  "description": "Fast and easy to learn tiny MVC framework",
+  "type": "library",
+  "license": "LGPL-3.0",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=8.5",
+    "ext-pdo": "*",
+    "psr/container": "^2.0",
+    "psr/log": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Velo\\": "src/",
+      "Velo\\Container\\": "packages/Container/src/",
+      "Velo\\Database\\": "packages/Database/src/",
+      "Velo\\Http\\": "packages/Http/src/",
+      "Velo\\Logger\\": "packages/Logger/src/",
+      "Velo\\Router\\": "packages/Router/src/",
+      "Velo\\Session\\": "packages/Session/src/",
+      "Velo\\View\\": "packages/View/src/",
+      "Velo\\FileSystem\\": "packages/FileSystem/src/",
+      "Velo\\Exceptions\\": "packages/Exceptions/src/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^13",
+    "phpstan/phpstan": "^2.0",
+    "phpstan/phpstan-phpunit": "^2.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Velo\\Tests\\": "tests/",
+
+      "Velo\\Container\\Tests\\": "packages/Container/tests/",
+      "Velo\\Database\\Tests\\": "packages/Database/tests/",
+      "Velo\\Http\\Tests\\": "packages/Http/tests/",
+      "Velo\\Logger\\Tests\\": "packages/Logger/tests/",
+      "Velo\\Router\\Tests\\": "packages/Router/tests/",
+      "Velo\\Session\\Tests\\": "packages/Session/tests/",
+      "Velo\\View\\Tests\\": "packages/View/tests/",
+      "Velo\\FileSystem\\Tests\\": "packages/FileSystem/tests/",
+
+      "Velo\\Playground\\": "playground/src/"
+    }
+  }
+}

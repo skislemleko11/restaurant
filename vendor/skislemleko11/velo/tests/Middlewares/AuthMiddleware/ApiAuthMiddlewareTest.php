@@ -1,0 +1,141 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Tests\Middlewares\AuthMiddleware;
+
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Velo\Http\Request;
+use Velo\Http\RequestMethod;
+use Velo\Http\Responses\Concrete\JsonResponse;
+use Velo\Http\Responses\Concrete\TextResponse;
+use Velo\Middlewares\AuthMiddleware\ApiAuthMiddleware;
+use Velo\Middlewares\AuthMiddleware\ApiAuthConfig;
+use Velo\Session\Session\Session;
+use Velo\Session\Session\SessionInterface;
+
+final class ApiAuthMiddlewareTest extends TestCase
+{
+    private SessionInterface $session;
+    private ApiAuthConfig $config;
+
+    protected function setUp(): void
+    {
+        $_SESSION = [];
+        $this->session = new Session();
+        $this->config = new ApiAuthConfig(
+            sessionKeyName: 'key',
+            responseForUnauthenticatedUser: ['error' => 'hehe']
+        );
+    }
+
+    protected function tearDown(): void
+    {
+        $_SESSION = [];
+    }
+
+    #[Test]
+    public function it_calls_next_when_user_is_authenticated(): void
+    {
+        $_SESSION[$this->config->sessionKeyName] = 123;
+
+        $request = new Request(url: '/dashboard', method: RequestMethod::GET);
+        $expectedResponse = new TextResponse('hehe');
+        $middleware = new ApiAuthMiddleware(session: $this->session);
+
+        $nextCalled = false;
+        $next = function (Request $req) use (&$nextCalled, $expectedResponse) {
+            $nextCalled = true;
+            return $expectedResponse;
+        };
+
+        $response = $middleware->handle($request, $next, $this->config);
+
+        self::assertTrue($nextCalled);
+        self::assertSame($expectedResponse, $response);
+        self::assertArrayNotHasKey('redirect_after_login', $_SESSION);
+    }
+
+    #[Test]
+    public function it_returns_unauthenticated_response_when_user_is_not_authenticated(): void
+    {
+        $request = new Request(url: '/protected-page', method: RequestMethod::GET);
+        $middleware = new ApiAuthMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $this->config);
+
+        self::assertSame(401, $response->statusCode);
+        self::assertNull($response->getHeader('Location'));
+        self::assertArrayNotHasKey('redirect_after_login', $_SESSION);
+    }
+
+    #[Test]
+    public function it_returns_custom_unauthenticated_response_when_provided(): void
+    {
+        $request = new Request(url: '/admin/settings', method: RequestMethod::GET);
+        $middleware = new ApiAuthMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $this->config);
+
+        self::assertSame(401, $response->statusCode);
+        self::assertNull($response->getHeader('Location'));
+        self::assertArrayNotHasKey('redirect_after_login', $_SESSION);
+        self::assertSame(['error' => 'hehe'], $response->body ?? null);
+    }
+
+    #[Test]
+    public function it_uses_custom_response_handler_when_provided(): void
+    {
+        $request = new Request(url: '/secret', method: RequestMethod::GET);
+        $customResponse = new TextResponse('', statusCode: 401);
+
+        $customHandler = function (Request $req) use ($request, $customResponse) {
+            self::assertSame($request, $req);
+            return $customResponse;
+        };
+
+        $config = new ApiAuthConfig(
+            customResponseHandler: $customHandler
+        );
+
+        $middleware = new ApiAuthMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $config);
+
+        self::assertSame($customResponse, $response);
+        self::assertArrayNotHasKey('redirect_after_login', $_SESSION);
+    }
+
+    #[Test]
+    public function it_uses_custom_response_handler_with_custom_response_when_provided(): void
+    {
+        $request = new Request(url: '/secret', method: RequestMethod::GET);
+
+        $expectedResponse = new JsonResponse(body: ['hehe' => 'hihi']);
+
+        $customHandler = function (Request $req, $responseForUnauthenticatedUser) use ($request) {
+            self::assertSame($request, $req);
+            return new JsonResponse(body: $responseForUnauthenticatedUser);
+        };
+
+        $config = new ApiAuthConfig(
+            responseForUnauthenticatedUser: ['hehe' => 'hihi'],
+            customResponseHandler: $customHandler
+        );
+
+        $middleware = new ApiAuthMiddleware(session: $this->session);
+
+        $next = fn() => self::fail('Should not be called for unauthenticated user.');
+
+        $response = $middleware->handle($request, $next, $config);
+
+        self::assertEquals($expectedResponse, $response);
+        self::assertArrayNotHasKey('redirect_after_login', $_SESSION);
+    }
+}

@@ -1,0 +1,162 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Http\Tests;
+
+use Exception;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Velo\Http\Emitter\EmitterInterface;
+use Velo\Http\RenderContext;
+use Velo\Http\RequestMethod;
+use Velo\Http\ResponseRenderer;
+use Velo\Http\Responses\Concrete\TextResponse;
+
+#[AllowMockObjectsWithoutExpectations]
+final class ResponseRendererTest extends TestCase
+{
+    #[Test]
+    public function it_renders_response_and_emits_it(): void
+    {
+        $response = new TextResponse(
+            'Hello world',
+            201,
+            ['Content-Type' => 'text/plain']
+        );
+
+        echo $response->getHeader('Content-Type');
+
+        $emitter = $this->createMock(EmitterInterface::class);
+        $context = $this->createMock(RenderContext::class);
+
+        $emitter
+            ->expects(self::once())
+            ->method('setStatusCode')
+            ->with(201)
+            ->willReturnSelf();
+
+        $emitter
+            ->expects(self::once())
+            ->method('sendHeaders')
+            ->with([
+                'content-type' => 'text/plain',
+                'content-length' => '11',
+            ]);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessageIs('Terminate');
+
+        $emitter
+            ->expects(self::once())
+            ->method('terminate')
+            ->willThrowException(new Exception('Terminate'));
+
+        $renderer = new ResponseRenderer($emitter, $context);
+
+        ob_start();
+
+        try {
+            $renderer->render($response);
+        } finally {
+            $output = ob_get_clean();
+        }
+
+        self::assertSame('Hello world', $output);
+    }
+
+    #[Test]
+    public function it_does_not_render_content_for_head_request(): void
+    {
+        $response = new TextResponse(
+            'Hello world',
+            200,
+            ['Content-Type' => 'text/plain']
+        );
+
+        $emitter = $this->createMock(EmitterInterface::class);
+        $context = $this->createMock(RenderContext::class);
+
+        $emitter
+            ->expects(self::once())
+            ->method('setStatusCode')
+            ->with(200)
+            ->willReturnSelf();
+
+        $emitter
+            ->expects(self::once())
+            ->method('sendHeaders')
+            ->with([
+                'content-type' => 'text/plain',
+                'content-length' => '11',
+            ]);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessageIs('Terminate');
+
+        $emitter
+            ->expects(self::once())
+            ->method('terminate')
+            ->willThrowException(new Exception('Terminate'));
+
+        $renderer = new ResponseRenderer($emitter, $context);
+
+        ob_start();
+
+        try {
+            $renderer->render($response, RequestMethod::HEAD);
+        } finally {
+            $output = ob_get_clean();
+        }
+
+        self::assertSame('', $output);
+    }
+
+    #[Test]
+    public function it_does_not_override_existing_content_length_and_sets_204_status_when_no_content(): void
+    {
+        $response = new TextResponse(
+            'Hello world',
+            headers: [
+                'Content-Length' => '0',
+            ]
+        );
+
+        $emitter = $this->createMock(EmitterInterface::class);
+        $context = $this->createMock(RenderContext::class);
+
+        $emitter
+            ->expects(self::once())
+            ->method('setStatusCode')
+            ->with(204)
+            ->willReturnSelf();
+
+        $emitter
+            ->expects(self::once())
+            ->method('sendHeaders')
+            ->with([
+                'content-length' => '0',
+                'content-type' => 'text/plain; charset=utf-8',
+            ]);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessageIs('Terminate');
+
+        $emitter
+            ->expects(self::once())
+            ->method('terminate')
+            ->willThrowException(new Exception('Terminate'));
+
+        $renderer = new ResponseRenderer($emitter, $context);
+
+        ob_start();
+
+        try {
+            $renderer->render($response);
+        } finally {
+            $output = ob_get_clean();
+        }
+
+        self::assertSame('Hello world', $output);
+    }
+}

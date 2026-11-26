@@ -1,0 +1,57 @@
+<?php
+declare(strict_types=1);
+
+namespace Velo\Session\FlashMessages;
+
+interface FlashMessagesInterface
+{
+    public const string SUCCESS = 'success';
+    public const string ERROR = 'error';
+    public const string WARNING = 'warning';
+    public const string INFO = 'info';
+    
+    /**
+     * Adds a flash message.
+     */
+    public function add(string $type, string $value): static;
+
+    /**
+     * Retrieves and removes all flash messages of the given type.
+     *
+     * @param list<string> $default
+     * @return list<string>
+     */
+    public function get(string $type, array $default = []): array;
+
+    /**
+     * Determines whether the given flash message type exists.
+     */
+    public function has(string $type): bool;
+
+    /**
+     * Retrieves and removes all flash messages.
+     *
+     * @return array<string, list<string>>
+     */
+    public function getAll(): array;
+
+    /**
+     * Adds a success flash message.
+     */
+    public function success(string $message): static;
+
+    /**
+     * Adds an error flash message.
+     */
+    public function error(string $message): static;
+
+    /**
+     * Adds a warning flash message.
+     */
+    public function warning(string $message): static;
+
+    /**
+     * Adds an info flash message.
+     */
+    public function info(string $message): static;
+}
