@@ -24,9 +24,12 @@ final readonly class Mailer
         $this->mailer->SMTPAuth = true;
         $this->mailer->Username = EnvUtils::getRequiredEnvValue('MAIL_USERNAME');
         $this->mailer->Password = EnvUtils::getRequiredEnvValue('MAIL_PASSWORD');
-        $this->mailer->SMTPSecure = $_ENV['MAIL_ENCRYPTION'] ?? PHPMailer::ENCRYPTION_STARTTLS;
-        $this->mailer->Port = (int)($_ENV['MAIL_PORT'] ?? 587);
+        $this->mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $this->mailer->Port = (int)($_ENV['MAIL_PORT'] ?? 465);
+        $this->mailer->Timeout = 15;
+        $this->mailer->SMTPKeepAlive = false;
         $this->mailer->CharSet = 'UTF-8';
+        $this->mailer->Encoding = 'base64';
         $this->mailer->setFrom(
             EnvUtils::getRequiredEnvValue('MAIL_FROM_ADDRESS'),
             $_ENV['MAIL_FROM_NAME'] ?? 'Restauracja'
