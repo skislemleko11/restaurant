@@ -1,0 +1,5 @@
+.idea/
+.vscode/
+logs/app.log
+.phpunit.cache/
+.env
